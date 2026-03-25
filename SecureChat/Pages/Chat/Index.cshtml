@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model SecureChat.Pages.Chat.IndexModel
 @{
     ViewData["Title"] = "Chat riêng";
@@ -26,7 +26,7 @@
                         <tr>
                             <td>@friend.FullName</td>
                             <td>@friend.Email</td>
-                            <td>
+                            <td id="status-@friend.UserId">
                                 @if (friend.IsOnline)
                                 {
                                     <span class="badge-soft badge-success">Online</span>
@@ -52,3 +52,28 @@
         <div class="alert alert-info">Bạn chưa có bạn bè nào để chat riêng.</div>
     }
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("UserStatusChanged", function (userId, isOnline) {
+            const statusCell = document.getElementById(`status-${userId}`);
+            if (statusCell) {
+                if (isOnline) {
+                    statusCell.innerHTML = '<span class="badge-soft badge-success">Online</span>';
+                } else {
+                    statusCell.innerHTML = '<span class="badge-soft badge-danger">Offline</span>';
+                }
+            }
+        });
+
+        connection.start()
+            .then(() => console.log("SignalR connected for presence updates"))
+            .catch(err => console.error(err.toString()));
+    </script>
+}

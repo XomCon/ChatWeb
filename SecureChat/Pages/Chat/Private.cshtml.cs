@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SecureChat.Data;
@@ -33,6 +33,7 @@ namespace SecureChat.Pages.Chat
         public string FriendEmail { get; set; } = string.Empty;
         public int ConversationId { get; set; }
 
+        public bool FriendIsOnline { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
 
         public List<MessageVm> Messages { get; set; } = new();
@@ -45,6 +46,7 @@ namespace SecureChat.Pages.Chat
             public string SenderName { get; set; } = string.Empty;
             public string Content { get; set; } = string.Empty;
             public DateTime SentAt { get; set; }
+            public bool IsSeen { get; set; }
             public bool IsMine { get; set; }
         }
 
@@ -132,6 +134,7 @@ namespace SecureChat.Pages.Chat
 
             FriendName = friend.FullName ?? "Người dùng";
             FriendEmail = friend.Email ?? "";
+            FriendIsOnline = friend.IsOnline;
 
             var myConversationIds = await _context.ConversationMembers
                 .Where(cm => cm.UserId == CurrentUserId)
@@ -201,6 +204,7 @@ namespace SecureChat.Pages.Chat
                         : "Người dùng",
                     Content = _encryptionService.Decrypt(m.EncryptedContent),
                     SentAt = m.SentAt,
+                    IsSeen = m.IsSeen,
                     IsMine = m.SenderId == CurrentUserId
                 })
                 .ToListAsync();

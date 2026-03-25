@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model SecureChat.Pages.Chat.PrivateModel
 @{
     ViewData["Title"] = "Chat riêng";
@@ -8,6 +8,16 @@
     <div class="d-flex justify-between align-center mb-4">
         <div>
             <h2>Chat với @Model.FriendName</h2>
+            <div id="friendStatus">
+                @if (Model.FriendIsOnline)
+                {
+                    <span class="badge-soft badge-success">Online</span>
+                }
+                else
+                {
+                    <span class="badge-soft badge-danger">Offline</span>
+                }
+            </div>
             <p class="text-muted">@Model.FriendEmail</p>
         </div>
         <div>
@@ -25,7 +35,7 @@
             Cuộc trò chuyện riêng
         </div>
 
-        <div class="chat-messages">
+        <div class="chat-messages" id="chatMessages">
             @if (Model.Messages.Any())
             {
                 @foreach (var message in Model.Messages)
@@ -44,20 +54,178 @@
                             <div style="font-size:11px; opacity:0.75; margin-top:8px;">
                                 @message.SentAt.ToString("dd/MM/yyyy HH:mm")
                             </div>
+
+                            @if (message.IsMine)
+                            {
+                                <div class="message-status @(message.IsSeen ? "text-success" : "text-muted")" style="font-size: 10px; text-align: right; margin-top: 4px;">
+                                    @(message.IsSeen ? "Đã xem" : "Đã gửi")
+                                </div>
+                            }
                         </div>
                     </div>
                 }
             }
             else
             {
-                <div class="alert alert-info">Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện.</div>
+                <div class="alert alert-info no-messages">Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện.</div>
             }
         </div>
 
-        <form method="post" class="chat-input">
-            <input type="hidden" asp-for="FriendUserId" />
-            <input asp-for="NewMessage" class="form-control" placeholder="Nhập tin nhắn..." />
-            <button type="submit" class="btn btn-primary">Gửi</button>
-        </form>
+        <div id="typingStatus" style="font-size: 12px; color: var(--text-soft); padding: 4px 12px; height: 20px; font-style: italic;"></div>
+
+        <div class="chat-input">
+            <input type="hidden" id="conversationId" value="@Model.ConversationId" />
+            <input type="hidden" id="currentUserId" value="@Model.CurrentUserId" />
+            <input type="hidden" id="friendUserId" value="@Model.FriendUserId" />
+            <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn..." autocomplete="off" />
+            <button type="button" id="sendBtn" class="btn btn-primary">Gửi</button>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const chatMessages = document.getElementById("chatMessages");
+        const messageInput = document.getElementById("messageInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const conversationId = document.getElementById("conversationId").value;
+        const currentUserId = document.getElementById("currentUserId").value;
+        const roomName = "Conversation_" + conversationId;
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("UserStatusChanged", function (userId, isOnline) {
+            if (userId === "@Model.FriendUserId") {
+                const statusDiv = document.getElementById("friendStatus");
+                if (isOnline) {
+                    statusDiv.innerHTML = '<span class="badge-soft badge-success">Online</span>';
+                } else {
+                    statusDiv.innerHTML = '<span class="badge-soft badge-danger">Offline</span>';
+                }
+            }
+        });
+
+        connection.on("UserTyping", function (userId, isOnline) {
+            if (userId === "@Model.FriendUserId") {
+                const typingStatus = document.getElementById("typingStatus");
+                typingStatus.innerText = isOnline ? "@Model.FriendName đang nhập..." : "";
+            }
+        });
+
+        connection.on("MessagesMarkedAsSeen", function (conversationId, userId) {
+            if (userId === "@Model.FriendUserId") {
+                // The friend saw our messages
+                const statusElements = document.querySelectorAll(".message-status");
+                statusElements.forEach(el => {
+                    el.innerText = "Đã xem";
+                    el.classList.remove("text-muted");
+                    el.classList.add("text-success");
+                });
+            }
+        });
+
+        connection.on("ReceiveMessage", function (senderId, message, sentAt, messageId) {
+            const isMine = senderId === currentUserId;
+            appendMessage(senderId, message, sentAt, isMine, false);
+            
+            // Remove "No messages" alert if it exists
+            const noMessages = document.querySelector(".no-messages");
+            if (noMessages) noMessages.remove();
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Mark as seen if we are focused
+            if (document.hasFocus() && !isMine) {
+                connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
+            }
+        });
+
+        connection.start()
+            .then(() => {
+                console.log("Connected to SignalR");
+                connection.invoke("JoinRoom", roomName);
+                // Mark messages as seen when entering the chat
+                connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
+            })
+            .catch(err => console.error(err.toString()));
+
+        // Typing logic
+        let typingTimeout;
+        messageInput.addEventListener("input", function () {
+            clearTimeout(typingTimeout);
+            connection.invoke("NotifyTyping", roomName, currentUserId, true);
+            
+            typingTimeout = setTimeout(() => {
+                connection.invoke("NotifyTyping", roomName, currentUserId, false);
+            }, 3000);
+        });
+
+        window.addEventListener("focus", function() {
+            connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
+        });
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            try {
+                // Clear typing indicator before sending
+                clearTimeout(typingTimeout);
+                await connection.invoke("NotifyTyping", roomName, currentUserId, false);
+
+                await connection.invoke("SendMessageToRoom", roomName, currentUserId, message, parseInt(conversationId));
+                messageInput.value = "";
+                messageInput.focus();
+            } catch (err) {
+                console.error(err.toString());
+                alert("Lỗi khi gửi tin nhắn qua SignalR");
+            }
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function appendMessage(senderId, content, sentAt, isMine, isSeen) {
+            const row = document.createElement("div");
+            row.className = `message-row ${isMine ? "mine" : "other"}`;
+            
+            let senderHtml = "";
+            let statusHtml = "";
+            if (!isMine) {
+                senderHtml = `<div style="font-size:12px; opacity:0.8; margin-bottom:6px;">@Model.FriendName</div>`;
+            } else {
+                statusHtml = `<div class="message-status ${isSeen ? "text-success" : "text-muted"}" style="font-size: 10px; text-align: right; margin-top: 4px;">${isSeen ? "Đã xem" : "Đã gửi"}</div>`;
+            }
+
+            row.innerHTML = `
+                <div class="message-bubble">
+                    ${senderHtml}
+                    <div>${escapeHtml(content)}</div>
+                    <div style="font-size:11px; opacity:0.75; margin-top:8px;">
+                        ${sentAt}
+                    </div>
+                    ${statusHtml}
+                </div>
+            `;
+            chatMessages.appendChild(row);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.innerText = text;
+            return div.innerHTML;
+        }
+
+        // Initial scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    </script>
+}
