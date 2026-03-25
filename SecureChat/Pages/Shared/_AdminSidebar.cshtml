@@ -1,0 +1,52 @@
+﻿@{
+    var path = Context.Request.Path.Value?.ToLower() ?? "";
+
+    string Active(string keyword)
+    {
+        return path.Contains(keyword.ToLower()) ? "admin-sidebar__link--active" : "";
+    }
+}
+
+<aside class="admin-sidebar">
+    <div class="admin-sidebar__top">
+        <div class="admin-sidebar__brand">
+            <div class="admin-sidebar__brand-icon">A</div>
+            <div>
+                <div class="admin-sidebar__brand-title">Admin Panel</div>
+                <div class="admin-sidebar__brand-subtitle">SecureChat</div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+        <a asp-page="/Admin/Index" class="admin-sidebar__link @Active("/admin/index")">
+            <span class="admin-sidebar__icon">⌂</span>
+            <span>Tổng quan</span>
+        </a>
+
+        <a asp-page="/Admin/Users" class="admin-sidebar__link @Active("/admin/users")">
+            <span class="admin-sidebar__icon">👤</span>
+            <span>Quản lý User</span>
+        </a>
+
+        <a asp-page="/Admin/Groups" class="admin-sidebar__link @Active("/admin/groups")">
+            <span class="admin-sidebar__icon">👥</span>
+            <span>Quản lý nhóm</span>
+        </a>
+
+        <a asp-page="/Admin/Logs" class="admin-sidebar__link @Active("/admin/logs")">
+            <span class="admin-sidebar__icon">📜</span>
+            <span>Nhật ký hệ thống</span>
+        </a>
+
+        <a asp-page="/Index" class="admin-sidebar__link">
+            <span class="admin-sidebar__icon">↩</span>
+            <span>Về trang chủ</span>
+        </a>
+
+        <a asp-page="/Account/Logout" class="admin-sidebar__link admin-sidebar__link--logout">
+            <span class="admin-sidebar__icon">⇥</span>
+            <span>Đăng xuất</span>
+        </a>
+    </nav>
+</aside>

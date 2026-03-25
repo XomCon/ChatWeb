@@ -1,0 +1,92 @@
+﻿@page
+@model SecureChat.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="auth-shell">
+    <div class="auth-panel auth-panel--form">
+        <div class="auth-panel__top">
+            <div class="auth-chip auth-chip--info">SecureChat Login</div>
+            <h1 class="auth-panel__title">Đăng nhập hệ thống</h1>
+            <p class="auth-panel__subtitle">
+                Nhập email và mật khẩu để tiếp tục. Nếu đăng nhập ở thiết bị mới, hệ thống sẽ gửi OTP về Gmail.
+            </p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="alert alert-success">@Model.SuccessMessage</div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+
+        <form method="post" class="auth-form">
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <input asp-for="Input.Email" class="form-control" placeholder="Nhập email tài khoản" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Input.Password" class="form-label">Mật khẩu</label>
+                <input asp-for="Input.Password" class="form-control" placeholder="Nhập mật khẩu" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="auth-note">
+                Nếu đây là <strong>thiết bị mới</strong>, bạn sẽ cần nhập thêm mã OTP được gửi về Gmail để hoàn tất đăng nhập.
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 auth-submit-btn">
+                Đăng nhập
+            </button>
+        </form>
+
+        <div class="auth-links-row">
+            <a asp-page="/Account/ForgotPassword">Quên mật khẩu?</a>
+            <a asp-page="/Account/Register">Tạo tài khoản mới</a>
+        </div>
+    </div>
+
+    <div class="auth-panel auth-panel--showcase">
+        <div class="auth-showcase__badge">Bảo mật đăng nhập</div>
+        <h2 class="auth-showcase__title">Xác thực OTP khi thiết bị mới</h2>
+        <p class="auth-showcase__text">
+            SecureChat chỉ cho phép một tài khoản hoạt động trên một thiết bị tại một thời điểm.
+        </p>
+
+        <div class="auth-showcase__steps">
+            <div class="auth-step-card">
+                <span class="auth-step-card__number">01</span>
+                <div>
+                    <h3>Kiểm tra tài khoản</h3>
+                    <p>Xác minh email, mật khẩu và trạng thái hoạt động.</p>
+                </div>
+            </div>
+
+            <div class="auth-step-card">
+                <span class="auth-step-card__number">02</span>
+                <div>
+                    <h3>Phát hiện thiết bị mới</h3>
+                    <p>Nếu không phải thiết bị cũ, hệ thống sẽ gửi OTP Gmail.</p>
+                </div>
+            </div>
+
+            <div class="auth-step-card">
+                <span class="auth-step-card__number">03</span>
+                <div>
+                    <h3>Cho phép đăng nhập</h3>
+                    <p>Chỉ đăng nhập thành công khi OTP đúng và hợp lệ.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

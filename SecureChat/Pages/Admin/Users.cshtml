@@ -1,0 +1,99 @@
+﻿@page
+@model SecureChat.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "Quản lý User";
+}
+
+<div class="admin-shell">
+    <section class="admin-hero">
+        <div class="admin-hero__left">
+            <div class="admin-chip">User Management</div>
+            <h1>Quản lý người dùng</h1>
+            <p>Xem, tìm kiếm và chỉnh sửa tài khoản trong hệ thống.</p>
+        </div>
+
+        <div class="admin-actions">
+            <a asp-page="/Admin/Index" class="btn btn-outline-light">Quay lại</a>
+        </div>
+    </section>
+
+    <section class="admin-toolbar">
+        <div class="admin-toolbar__left">
+            <form method="get" class="d-flex gap-2">
+                <input asp-for="Keyword" class="form-control admin-search" placeholder="Tìm theo tên, email, số điện thoại..." />
+                <select asp-for="RoleFilter" class="form-select" style="max-width:180px;">
+                    <option value="">Tất cả quyền</option>
+                    <option value="Admin">Admin</option>
+                    <option value="User">User</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Lọc</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="admin-table-panel">
+        <div class="admin-table-panel__head">
+            <div>
+                <h2 class="admin-table-panel__title">Danh sách tài khoản</h2>
+                <p class="admin-table-panel__desc">Tổng: @Model.Users.Count tài khoản</p>
+            </div>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Quyền</th>
+                        <th>Trạng thái</th>
+                        <th>Online</th>
+                        <th>Login sai</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model.Users)
+                    {
+                        <tr>
+                            <td>@u.FullName</td>
+                            <td>@u.Email</td>
+                            <td>@u.PhoneNumber</td>
+                            <td>
+                                @if (u.Role == "Admin")
+                                {
+                                    <span class="admin-badge admin-badge--warning">Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="admin-badge admin-badge--info">User</span>
+                                }
+                            </td>
+                            <td>
+                                @if (u.IsActive)
+                                {
+                                    <span class="admin-badge admin-badge--success">Hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="admin-badge admin-badge--danger">Đã khóa</span>
+                                }
+                            </td>
+                            <td>@(u.IsOnline ? "🟢" : "⚫")</td>
+                            <td>@u.FailedLoginCount</td>
+                            <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <div class="admin-row-actions">
+                                    <a asp-page="/Admin/EditUser" asp-route-id="@u.Id" class="btn btn-secondary admin-btn-sm">Sửa</a>
+                                    <a asp-page="/Admin/DeleteUser" asp-route-id="@u.Id" class="btn btn-danger admin-btn-sm">Xóa</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

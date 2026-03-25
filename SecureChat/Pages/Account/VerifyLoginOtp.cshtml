@@ -1,0 +1,31 @@
+﻿@page
+@model SecureChat.Pages.Account.VerifyLoginOtpModel
+@{
+    ViewData["Title"] = "Xác thực OTP đăng nhập";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2 class="auth-title">Xác thực đăng nhập</h2>
+        <p class="auth-subtitle">OTP đã được gửi đến: <strong>@Model.Email</strong></p>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+
+        <form method="post">
+            <div class="mb-4">
+                <label asp-for="Input.OtpCode" class="form-label">Mã OTP</label>
+                <input asp-for="Input.OtpCode" class="form-control" placeholder="Nhập OTP" />
+                <span asp-validation-for="Input.OtpCode" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Xác nhận đăng nhập</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

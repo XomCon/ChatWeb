@@ -1,0 +1,50 @@
+﻿@page
+@model SecureChat.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-layout">
+    <partial name="_AdminSidebar" />
+
+    <div class="admin-main">
+        <div class="admin-simple">
+
+            <div class="admin-header">
+                <div>
+                    <h1>Admin Dashboard</h1>
+                    <p>Quản lý hệ thống SecureChat</p>
+                </div>
+            </div>
+
+            <div class="admin-stats">
+                <div class="stat-box">
+                    <span>Tổng user</span>
+                    <h2>@Model.TotalUsers</h2>
+                </div>
+
+                <div class="stat-box">
+                    <span>Online</span>
+                    <h2>@Model.OnlineUsers</h2>
+                </div>
+
+                <div class="stat-box">
+                    <span>Admin</span>
+                    <h2>@Model.TotalAdmins</h2>
+                </div>
+
+                <div class="stat-box">
+                    <span>Đang hoạt động</span>
+                    <h2>@Model.ActiveUsers</h2>
+                </div>
+            </div>
+
+            <div class="admin-actions-grid">
+                <a asp-page="/Admin/Users" class="action-card">👤 Quản lý User</a>
+                <a asp-page="/Admin/Groups" class="action-card">👥 Quản lý nhóm</a>
+                <a asp-page="/Admin/Logs" class="action-card">📜 Nhật ký hệ thống</a>
+                <a asp-page="/Chat/Recent" class="action-card">💬 Xem chat</a>
+            </div>
+        </div>
+    </div>
+</div>

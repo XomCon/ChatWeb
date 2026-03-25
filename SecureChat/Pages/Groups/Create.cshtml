@@ -1,0 +1,54 @@
+﻿@page
+@model SecureChat.Pages.Groups.CreateModel
+@{
+    ViewData["Title"] = "Tạo nhóm chat";
+}
+
+<div class="page-box">
+    <h2>Tạo nhóm chat</h2>
+    <p class="text-muted">Chọn bạn bè để thêm vào nhóm.</p>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <form method="post">
+        <div class="mb-4">
+            <label asp-for="Input.GroupName" class="form-label"></label>
+            <input asp-for="Input.GroupName" class="form-control" placeholder="Nhập tên nhóm" />
+            <span asp-validation-for="Input.GroupName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Chọn thành viên</label>
+
+            @if (Model.Friends.Any())
+            {
+                <div class="info-grid">
+                    @foreach (var friend in Model.Friends)
+                    {
+                        <label class="info-card" style="cursor:pointer;">
+                            <input type="checkbox" name="Input.SelectedFriendIds" value="@friend.UserId" style="margin-right:10px;" />
+                            <strong>@friend.FullName</strong>
+                            <div class="text-muted">@friend.Email</div>
+                        </label>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">Bạn chưa có bạn bè nào để thêm vào nhóm.</div>
+            }
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="btn btn-primary">Tạo nhóm</button>
+            <a asp-page="/Groups/Index" class="btn btn-outline-light">Quay lại</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

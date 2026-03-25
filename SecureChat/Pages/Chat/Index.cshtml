@@ -1,0 +1,54 @@
+﻿@page
+@model SecureChat.Pages.Chat.IndexModel
+@{
+    ViewData["Title"] = "Chat riêng";
+}
+
+<div class="page-box-wide">
+    <h2>Chat riêng</h2>
+    <p class="text-muted">Chọn một người bạn để bắt đầu trò chuyện.</p>
+
+    @if (Model.Friends.Any())
+    {
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var friend in Model.Friends)
+                    {
+                        <tr>
+                            <td>@friend.FullName</td>
+                            <td>@friend.Email</td>
+                            <td>
+                                @if (friend.IsOnline)
+                                {
+                                    <span class="badge-soft badge-success">Online</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft badge-danger">Offline</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-page="/Chat/Private" asp-route-friendUserId="@friend.UserId" class="btn btn-primary">
+                                    Mở chat
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">Bạn chưa có bạn bè nào để chat riêng.</div>
+    }
+</div>

@@ -1,0 +1,65 @@
+﻿@page
+@model SecureChat.Pages.Admin.LogsModel
+@{
+    ViewData["Title"] = "Nhật ký hệ thống";
+}
+
+<div class="admin-layout">
+    <partial name="_AdminSidebar" />
+    <div class="admin-main">
+        <div class="admin-shell">
+            <section class="admin-hero">
+                <div class="admin-hero__left">
+                    <div class="admin-chip">System Logs</div>
+                    <h1>Nhật ký hệ thống</h1>
+                    <p>Theo dõi hoạt động và bảo mật trong SecureChat.</p>
+                </div>
+            </section>
+
+            <section class="admin-toolbar">
+                <div class="admin-toolbar__left">
+                    <form method="get" class="admin-search">
+                        <input asp-for="Keyword" class="form-control" placeholder="Tìm theo action, email, mô tả..." />
+                    </form>
+                </div>
+            </section>
+
+            <section class="admin-table-panel">
+                <div class="admin-table-panel__head">
+                    <div>
+                        <h2 class="admin-table-panel__title">Lịch sử hoạt động</h2>
+                        <p class="admin-table-panel__desc">Theo dõi các thao tác quan trọng trong hệ thống.</p>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                                <th>Mô tả</th>
+                                <th>IP</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.Logs)
+                            {
+                                <tr>
+                                    <td>@log.Id</td>
+                                    <td>@log.UserEmail</td>
+                                    <td>@log.Action</td>
+                                    <td>@log.Description</td>
+                                    <td>@log.IpAddress</td>
+                                    <td>@log.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

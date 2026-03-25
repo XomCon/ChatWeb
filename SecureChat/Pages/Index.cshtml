@@ -1,0 +1,131 @@
+﻿@page
+@model SecureChat.Pages.IndexModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+@if (!Model.IsLoggedIn)
+{
+    <section class="saas-home">
+        <div class="saas-home__hero">
+            <div class="saas-home__eyebrow">SecureChat Platform</div>
+            <h1>Chat an toàn, quản lý gọn, sử dụng nhanh.</h1>
+            <p>
+                Một hệ thống nhắn tin hiện đại với kết bạn, chat riêng, chat nhóm,
+                phân quyền admin và kiểm soát bảo mật.
+            </p>
+
+            <div class="saas-home__actions">
+                <a asp-page="/Account/Register" class="btn btn-primary">Bắt đầu ngay</a>
+                <a asp-page="/Account/Login" class="btn btn-outline-light">Đăng nhập</a>
+            </div>
+        </div>
+
+        <div class="saas-home__stats">
+            <div class="saas-metric">
+                <span class="saas-metric__label">Người dùng</span>
+                <strong class="saas-metric__value">@Model.TotalUsers</strong>
+            </div>
+            <div class="saas-metric">
+                <span class="saas-metric__label">Đang online</span>
+                <strong class="saas-metric__value">@Model.OnlineUsers</strong>
+            </div>
+            <div class="saas-metric">
+                <span class="saas-metric__label">Nhóm chat</span>
+                <strong class="saas-metric__value">@Model.TotalGroups</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="saas-grid">
+        <div class="saas-card">
+            <h3>Kết bạn</h3>
+            <p>Kết nối và quản lý danh sách bạn bè nhanh chóng.</p>
+        </div>
+        <div class="saas-card">
+            <h3>Chat riêng</h3>
+            <p>Nhắn tin trực tiếp với bạn bè trong hệ thống.</p>
+        </div>
+        <div class="saas-card">
+            <h3>Chat nhóm</h3>
+            <p>Tạo nhóm, thêm thành viên và quản lý vai trò.</p>
+        </div>
+        <div class="saas-card">
+            <h3>Admin</h3>
+            <p>Giám sát user, quyền truy cập và log hệ thống.</p>
+        </div>
+    </section>
+}
+else
+{
+    <section class="saas-dashboard">
+        <div class="saas-dashboard__top">
+            <div>
+                <div class="saas-home__eyebrow">Dashboard</div>
+                <h1>@Model.FullName</h1>
+                <p>@Model.Email · @Model.Role</p>
+            </div>
+
+            <div class="saas-dashboard__actions">
+                <a asp-page="/Chat/Recent" class="btn btn-primary">Mở chat</a>
+                <a asp-page="/Account/Profile" class="btn btn-outline-light">Hồ sơ</a>
+                <a asp-page="/Account/Logout" class="btn btn-danger">Đăng xuất</a>
+            </div>
+        </div>
+
+        <div class="saas-dashboard__metrics">
+            <div class="saas-metric">
+                <span class="saas-metric__label">Bạn bè</span>
+                <strong class="saas-metric__value">@Model.FriendCount</strong>
+            </div>
+            <div class="saas-metric">
+                <span class="saas-metric__label">Lời mời</span>
+                <strong class="saas-metric__value">@Model.PendingCount</strong>
+            </div>
+            <div class="saas-metric">
+                <span class="saas-metric__label">Nhóm</span>
+                <strong class="saas-metric__value">@Model.GroupCount</strong>
+            </div>
+        </div>
+
+        <div class="saas-dashboard__grid">
+            <a asp-page="/Friends/Index" class="saas-link-card">
+                <h3>Bạn bè</h3>
+                <p>Danh sách và trạng thái bạn bè.</p>
+            </a>
+
+            <a asp-page="/Friends/Requests" class="saas-link-card">
+                <h3>Lời mời kết bạn</h3>
+                <p>Xử lý lời mời đang chờ.</p>
+            </a>
+
+            <a asp-page="/Chat/Recent" class="saas-link-card">
+                <h3>Cuộc trò chuyện</h3>
+                <p>Mở các chat gần đây.</p>
+            </a>
+
+            <a asp-page="/Groups/Index" class="saas-link-card">
+                <h3>Nhóm chat</h3>
+                <p>Quản lý nhóm đang tham gia.</p>
+            </a>
+
+            <a asp-page="/Account/ChangePassword" class="saas-link-card">
+                <h3>Đổi mật khẩu</h3>
+                <p>Cập nhật bảo mật tài khoản.</p>
+            </a>
+
+            @if (Model.IsAdmin)
+            {
+                <a asp-page="/Admin/Index" class="saas-link-card saas-link-card--admin">
+                    <h3>Quản trị hệ thống</h3>
+                    <p>Quản lý người dùng và quyền hạn.</p>
+                </a>
+
+                <a asp-page="/Admin/Logs" class="saas-link-card saas-link-card--admin">
+                    <h3>Nhật ký hệ thống</h3>
+                    <p>Theo dõi hoạt động toàn hệ thống.</p>
+                </a>
+            }
+        </div>
+    </section>
+}

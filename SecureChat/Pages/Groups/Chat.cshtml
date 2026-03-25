@@ -1,0 +1,299 @@
+﻿@page
+@model SecureChat.Pages.Groups.ChatModel
+@{
+    ViewData["Title"] = "Chat nhóm";
+}
+
+<div class="page-box-wide">
+    <div class="d-flex justify-between align-center mb-4">
+        <div>
+            <h2>@Model.GroupName</h2>
+            <p class="text-muted">Phòng chat nhóm realtime</p>
+        </div>
+
+        <div class="d-flex gap-2" style="flex-wrap:wrap;">
+            <a asp-page="/Groups/Index" class="btn btn-outline-light">Quay lại</a>
+
+            <form method="post" asp-page-handler="LeaveGroup" style="display:inline;">
+                <input type="hidden" asp-for="ConversationId" />
+                <button type="submit" class="btn btn-danger">Rời nhóm</button>
+            </form>
+
+            @if (Model.IsGroupAdmin)
+            {
+                <form method="post" asp-page-handler="DeleteGroup" style="display:inline;"
+                      onsubmit="return confirm('Bạn có chắc muốn xóa nhóm này không?');">
+                    <input type="hidden" asp-for="ConversationId" />
+                    <button type="submit" class="btn btn-danger">Xóa nhóm</button>
+                </form>
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <div class="page-box-wide mb-4" style="padding: 1rem;">
+        <div class="d-flex justify-between align-center mb-3" style="flex-wrap:wrap; gap:12px;">
+            <h3 style="margin:0;">Thành viên nhóm</h3>
+
+            <form method="get" class="d-flex gap-2" style="flex-wrap:wrap;">
+                <input type="hidden" asp-for="ConversationId" />
+                <input asp-for="Search" class="form-control" placeholder="Tìm tin nhắn..." style="min-width:260px;" />
+                <button type="submit" class="btn btn-secondary">Tìm</button>
+                <a asp-page="/Groups/Chat" asp-route-conversationId="@Model.ConversationId" class="btn btn-outline-light">
+                    Xóa lọc
+                </a>
+            </form>
+        </div>
+
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Ghi chú</th>
+                        @if (Model.IsGroupAdmin)
+                        {
+                            <th>Thao tác</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var member in Model.Members)
+                    {
+                        <tr>
+                            <td>@member.FullName</td>
+                            <td>@member.Email</td>
+                            <td>
+                                @if (member.Role == "GroupAdmin")
+                                {
+                                    <span class="badge-soft badge-warning">GroupAdmin</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft badge-info">Member</span>
+                                }
+                            </td>
+                            <td>
+                                @if (member.IsCurrentUser)
+                                {
+                                    <span class="badge-soft badge-success">Bạn</span>
+                                }
+                            </td>
+
+                            @if (Model.IsGroupAdmin)
+                            {
+                                <td>
+                                    @if (!member.IsCurrentUser)
+                                    {
+                                        <div class="d-flex gap-2" style="flex-wrap:wrap;">
+                                            <form method="post" asp-page-handler="PromoteMember" style="display:inline;">
+                                                <input type="hidden" asp-for="ConversationId" />
+                                                <input type="hidden" name="memberUserId" value="@member.UserId" />
+                                                <button type="submit" class="btn btn-secondary">
+                                                    @(member.Role == "GroupAdmin" ? "Hạ quyền" : "Nâng quyền")
+                                                </button>
+                                            </form>
+
+                                            <form method="post" asp-page-handler="RemoveMember" style="display:inline;"
+                                                  onsubmit="return confirm('Bạn có chắc muốn xóa thành viên này khỏi nhóm?');">
+                                                <input type="hidden" asp-for="ConversationId" />
+                                                <input type="hidden" name="memberUserId" value="@member.UserId" />
+                                                <button type="submit" class="btn btn-danger">Xóa khỏi nhóm</button>
+                                            </form>
+                                        </div>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (Model.IsGroupAdmin)
+    {
+        <div class="page-box-wide mb-4" style="padding: 1rem;">
+            <h3>Thêm thành viên</h3>
+
+            @if (Model.AvailableFriends.Any())
+            {
+                <form method="post" asp-page-handler="AddMembers">
+                    <input type="hidden" asp-for="ConversationId" />
+
+                    <div class="info-grid mb-3">
+                        @foreach (var friend in Model.AvailableFriends)
+                        {
+                            <label class="info-card" style="cursor:pointer;">
+                                <input type="checkbox" name="SelectedFriendIds" value="@friend.UserId" style="margin-right:10px;" />
+                                <strong>@friend.FullName</strong>
+                                <div class="text-muted">@friend.Email</div>
+                            </label>
+                        }
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary">Thêm vào nhóm</button>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-info">Không còn bạn bè nào để thêm vào nhóm.</div>
+            }
+        </div>
+    }
+
+    <div class="chat-window">
+        <div class="chat-header">
+            Tin nhắn nhóm realtime
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            @if (Model.Messages.Any())
+            {
+                @foreach (var message in Model.Messages)
+                {
+                    <div class="message-row @(message.IsMine ? "mine" : "other")">
+                        <div class="message-bubble">
+                            @if (!message.IsMine)
+                            {
+                                <div style="font-size:12px; opacity:0.85; margin-bottom:6px; font-weight:600;">
+                                    @message.SenderName
+                                </div>
+                            }
+
+                            <div>@message.Content</div>
+
+                            <div style="font-size:11px; opacity:0.75; margin-top:8px;">
+                                @message.SentAt.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">Chưa có tin nhắn nào trong nhóm.</div>
+            }
+        </div>
+
+        <form id="chatForm" class="chat-input">
+            <input type="text" class="form-control" id="messageInput" placeholder="Nhập tin nhắn nhóm rồi nhấn Enter..." />
+            <button type="submit" class="btn btn-primary">Gửi</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+    <script>
+        const conversationId = "@Model.ConversationId";
+        const currentUserId = "@Model.CurrentUserId";
+        const currentUserName = "@Model.CurrentUserName";
+
+        const chatMessages = document.getElementById("chatMessages");
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        connection.start()
+            .then(function () {
+                return connection.invoke("JoinConversation", conversationId.toString());
+            })
+            .catch(function (err) {
+                console.error("SignalR lỗi kết nối:", err.toString());
+            });
+
+        connection.on("ReceiveGroupMessage", function (msg) {
+            appendMessage(msg);
+        });
+
+        chatForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            sendMessage();
+        });
+
+        messageInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+
+            if (text === "") return;
+
+            try {
+                await connection.invoke(
+                    "SendGroupMessage",
+                    conversationId.toString(),
+                    currentUserId,
+                    currentUserName,
+                    text
+                );
+
+                messageInput.value = "";
+            } catch (err) {
+                console.error("Lỗi gửi tin nhắn:", err.toString());
+                alert("Không gửi được tin nhắn.");
+            }
+        }
+
+        function appendMessage(msg) {
+            const isMine = msg.senderId === currentUserId;
+
+            const row = document.createElement("div");
+            row.className = "message-row " + (isMine ? "mine" : "other");
+
+            let html = "";
+
+            if (!isMine) {
+                html += `
+                    <div style="font-size:12px; opacity:0.85; margin-bottom:6px; font-weight:600;">
+                        ${escapeHtml(msg.senderName)}
+                    </div>
+                `;
+            }
+
+            html += `<div>${escapeHtml(msg.content)}</div>`;
+
+            html += `
+                <div style="font-size:11px; opacity:0.75; margin-top:8px;">
+                    ${msg.sentAt}
+                </div>
+            `;
+
+            row.innerHTML = `<div class="message-bubble">${html}</div>`;
+            chatMessages.appendChild(row);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.innerText = text;
+            return div.innerHTML;
+        }
+
+        window.addEventListener("beforeunload", function () {
+            connection.invoke("LeaveConversation", conversationId.toString());
+        });
+    </script>
+}

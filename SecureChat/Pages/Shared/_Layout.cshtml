@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SecureChat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @{
+        var userId = Context.Session.GetString("UserId");
+        var fullName = Context.Session.GetString("FullName");
+        var email = Context.Session.GetString("Email");
+        var role = Context.Session.GetString("Role");
+        var path = Context.Request.Path.Value?.ToLower() ?? "";
+        bool isLoggedIn = !string.IsNullOrEmpty(userId);
+
+        string IsActive(string keyword)
+        {
+            return path.Contains(keyword.ToLower()) ? "active" : "";
+        }
+    }
+
+    @if (isLoggedIn)
+    {
+        <div class="app-shell">
+            <aside class="app-sidebar">
+                <div class="sidebar-top">
+                    <div class="brand-box">
+                        <div class="brand-dot"></div>
+                        <div>
+                            <div class="brand-title">SecureChat</div>
+                            <div class="brand-subtitle">Messaging System</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">
+                        @(string.IsNullOrWhiteSpace(fullName) ? "U" : fullName.Substring(0, 1).ToUpper())
+                    </div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name">@fullName</div>
+                        <div class="sidebar-user-email">@email</div>
+                        <div class="sidebar-user-role">@role</div>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <a asp-page="/Index" class="sidebar-link @IsActive("/index")">
+                        <span class="sidebar-icon">⌂</span>
+                        <span>Trang chủ</span>
+                    </a>
+
+                    <a asp-page="/Account/Profile" class="sidebar-link @IsActive("/account/profile")">
+                        <span class="sidebar-icon">◉</span>
+                        <span>Hồ sơ</span>
+                    </a>
+
+                    <a asp-page="/Account/ChangePassword" class="sidebar-link @IsActive("/account/changepassword")">
+                        <span class="sidebar-icon">◌</span>
+                        <span>Đổi mật khẩu</span>
+                    </a>
+
+                    <a asp-page="/Friends/Index" class="sidebar-link @IsActive("/friends/index")">
+                        <span class="sidebar-icon">☰</span>
+                        <span>Bạn bè</span>
+                    </a>
+
+                    <a asp-page="/Friends/Requests" class="sidebar-link @IsActive("/friends/requests")">
+                        <span class="sidebar-icon">✉</span>
+                        <span>Lời mời kết bạn</span>
+                    </a>
+
+                    <a asp-page="/Friends/FindUsers" class="sidebar-link @IsActive("/friends/findusers")">
+                        <span class="sidebar-icon">⌕</span>
+                        <span>Tìm người dùng</span>
+                    </a>
+
+                    <a asp-page="/Chat/Recent" class="sidebar-link @IsActive("/chat/recent")">
+                        <span class="sidebar-icon">✦</span>
+                        <span>Trò chuyện gần đây</span>
+                    </a>
+
+                    <a asp-page="/Chat/Index" class="sidebar-link @IsActive("/chat/index")">
+                        <span class="sidebar-icon">▣</span>
+                        <span>Chat riêng</span>
+                    </a>
+
+                    <a asp-page="/Groups/Index" class="sidebar-link @IsActive("/groups/index")">
+                        <span class="sidebar-icon">▤</span>
+                        <span>Chat nhóm</span>
+                    </a>
+
+                    <a asp-page="/Groups/Create" class="sidebar-link @IsActive("/groups/create")">
+                        <span class="sidebar-icon">＋</span>
+                        <span>Tạo nhóm</span>
+                    </a>
+
+                    @if (role == "Admin")
+                    {
+                        <div class="sidebar-section-title">Quản trị</div>
+
+                        <a asp-page="/Admin/Index" class="sidebar-link @IsActive("/admin/index")">
+                            <span class="sidebar-icon">⚙</span>
+                            <span>Admin Dashboard</span>
+                        </a>
+
+                        <a asp-page="/Admin/Logs" class="sidebar-link @IsActive("/admin/logs")">
+                            <span class="sidebar-icon">☷</span>
+                            <span>Nhật ký hệ thống</span>
+                        </a>
+                    }
+                </nav>
+
+                <div class="sidebar-bottom">
+                    <a asp-page="/Account/Logout" class="sidebar-link sidebar-logout">
+                        <span class="sidebar-icon">⇥</span>
+                        <span>Đăng xuất</span>
+                    </a>
+                </div>
+            </aside>
+
+            <div class="app-main">
+                <header class="app-topbar">
+                    <div>
+                        <h1 class="app-page-title">@ViewData["Title"]</h1>
+                        <p class="app-page-subtitle">SecureChat dashboard</p>
+                    </div>
+                </header>
+
+                <main class="app-content">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="guest-shell">
+            <nav class="guest-navbar">
+                <div class="guest-brand">SecureChat</div>
+                <div class="guest-nav-links">
+                    <a asp-page="/Index">Trang chủ</a>
+                    <a asp-page="/Account/Login">Đăng nhập</a>
+                    <a asp-page="/Account/Register">Đăng ký</a>
+                </div>
+            </nav>
+
+            <main class="guest-main container">
+                @RenderBody()
+            </main>
+        </div>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

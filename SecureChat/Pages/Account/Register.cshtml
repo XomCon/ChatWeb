@@ -1,0 +1,109 @@
+﻿@page
+@model SecureChat.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="auth-shell">
+    <div class="auth-panel auth-panel--form">
+        <div class="auth-panel__top">
+            <div class="auth-chip auth-chip--success">SecureChat Register</div>
+            <h1 class="auth-panel__title">Tạo tài khoản mới</h1>
+            <p class="auth-panel__subtitle">
+                Nhập thông tin của bạn. Hệ thống sẽ gửi mã OTP về Gmail để xác thực đăng ký.
+            </p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+
+        <form method="post" class="auth-form">
+            <div class="auth-form__grid">
+                <div class="mb-3">
+                    <label asp-for="Input.FullName" class="form-label">Họ và tên</label>
+                    <input asp-for="Input.FullName" class="form-control" placeholder="Nhập họ và tên" />
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.PhoneNumber" class="form-label">Số điện thoại</label>
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label">Gmail</label>
+                <input asp-for="Input.Email" class="form-control" placeholder="Nhập Gmail để nhận OTP" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="auth-form__grid">
+                <div class="mb-3">
+                    <label asp-for="Input.Password" class="form-label">Mật khẩu</label>
+                    <input asp-for="Input.Password" class="form-control" placeholder="Nhập mật khẩu" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.ConfirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="auth-note">
+                Sau khi nhấn <strong>Gửi OTP đăng ký</strong>, hệ thống sẽ gửi mã OTP tới Gmail của bạn.
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 auth-submit-btn">
+                Gửi OTP đăng ký
+            </button>
+        </form>
+
+        <div class="auth-footer-link">
+            Đã có tài khoản?
+            <a asp-page="/Account/Login">Đăng nhập ngay</a>
+        </div>
+    </div>
+
+    <div class="auth-panel auth-panel--showcase">
+        <div class="auth-showcase__badge">Bảo mật đăng ký</div>
+        <h2 class="auth-showcase__title">Xác thực Gmail bằng OTP</h2>
+        <p class="auth-showcase__text">
+            Tài khoản chỉ được tạo thành công khi người dùng nhập đúng mã OTP được gửi tới Gmail.
+        </p>
+
+        <div class="auth-showcase__steps">
+            <div class="auth-step-card">
+                <span class="auth-step-card__number">01</span>
+                <div>
+                    <h3>Nhập thông tin</h3>
+                    <p>Họ tên, Gmail, số điện thoại và mật khẩu.</p>
+                </div>
+            </div>
+
+            <div class="auth-step-card">
+                <span class="auth-step-card__number">02</span>
+                <div>
+                    <h3>Nhận OTP Gmail</h3>
+                    <p>Hệ thống gửi mã OTP xác thực về đúng email đã đăng ký.</p>
+                </div>
+            </div>
+
+            <div class="auth-step-card">
+                <span class="auth-step-card__number">03</span>
+                <div>
+                    <h3>Hoàn tất đăng ký</h3>
+                    <p>Chỉ tạo tài khoản khi OTP hợp lệ và chưa hết hạn.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,63 @@
+﻿@page
+@model SecureChat.Pages.Chat.PrivateModel
+@{
+    ViewData["Title"] = "Chat riêng";
+}
+
+<div class="page-box-wide">
+    <div class="d-flex justify-between align-center mb-4">
+        <div>
+            <h2>Chat với @Model.FriendName</h2>
+            <p class="text-muted">@Model.FriendEmail</p>
+        </div>
+        <div>
+            <a asp-page="/Chat/Index" class="btn btn-outline-light">Quay lại</a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <div class="chat-window">
+        <div class="chat-header">
+            Cuộc trò chuyện riêng
+        </div>
+
+        <div class="chat-messages">
+            @if (Model.Messages.Any())
+            {
+                @foreach (var message in Model.Messages)
+                {
+                    <div class="message-row @(message.IsMine ? "mine" : "other")">
+                        <div class="message-bubble">
+                            @if (!message.IsMine)
+                            {
+                                <div style="font-size:12px; opacity:0.8; margin-bottom:6px;">
+                                    @message.SenderName
+                                </div>
+                            }
+
+                            <div>@message.Content</div>
+
+                            <div style="font-size:11px; opacity:0.75; margin-top:8px;">
+                                @message.SentAt.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện.</div>
+            }
+        </div>
+
+        <form method="post" class="chat-input">
+            <input type="hidden" asp-for="FriendUserId" />
+            <input asp-for="NewMessage" class="form-control" placeholder="Nhập tin nhắn..." />
+            <button type="submit" class="btn btn-primary">Gửi</button>
+        </form>
+    </div>
+</div>

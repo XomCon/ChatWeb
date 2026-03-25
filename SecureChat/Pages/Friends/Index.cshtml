@@ -1,0 +1,73 @@
+﻿@page
+@model SecureChat.Pages.Friends.IndexModel
+@{
+    ViewData["Title"] = "Danh sách bạn bè";
+}
+
+<div class="page-box-wide">
+    <h2>Danh sách bạn bè</h2>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    @if (Model.Friends.Any())
+    {
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var friend in Model.Friends)
+                    {
+                        <tr>
+                            <td>@friend.FullName</td>
+                            <td>@friend.Email</td>
+                            <td>@friend.PhoneNumber</td>
+                            <td>
+                                @if (friend.IsOnline)
+                                {
+                                    <span class="badge-soft badge-success">Online</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft badge-danger">Offline</span>
+                                }
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-secondary" disabled>Chat riêng</button>
+
+                                <form method="post" asp-page-handler="Remove" style="display:inline; margin-left:8px;">
+                                    <input type="hidden" name="friendUserId" value="@friend.UserId" />
+                                    <button type="submit" class="btn btn-danger">Xóa bạn</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">Bạn chưa có bạn bè nào.</div>
+    }
+
+    <div class="mt-4">
+        <a asp-page="/Friends/FindUsers" class="btn btn-primary">Tìm người dùng</a>
+        <a asp-page="/Friends/Requests" class="btn btn-outline-light">Lời mời kết bạn</a>
+    </div>
+</div>

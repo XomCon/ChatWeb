@@ -1,0 +1,22 @@
+﻿@page
+@model SecureChat.Pages.CreateAdminModel
+@{
+    ViewData["Title"] = "Create Admin";
+}
+
+<div class="page-box">
+    <h2>Tạo tài khoản Admin</h2>
+
+    <div class="alert alert-success">
+        @Model.Message
+    </div>
+
+    <div class="alert alert-info">
+        Email: <strong>admin@securechat.com</strong><br />
+        Mật khẩu: <strong>12345678</strong>
+    </div>
+
+    <p>
+        <a asp-page="/Account/Login" class="btn btn-primary">Đi tới đăng nhập</a>
+    </p>
+</div>

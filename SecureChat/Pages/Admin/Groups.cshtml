@@ -1,0 +1,60 @@
+﻿@page
+@model SecureChat.Pages.Admin.GroupsModel
+@{
+    ViewData["Title"] = "Quản lý nhóm chat";
+}
+
+<div class="admin-shell">
+    <section class="admin-hero">
+        <div class="admin-hero__left">
+            <div class="admin-chip">Group Management</div>
+            <h1>Quản lý nhóm chat</h1>
+            <p>Xem toàn bộ nhóm đang tồn tại trong hệ thống.</p>
+        </div>
+
+        <div class="admin-actions">
+            <a asp-page="/Admin/Index" class="btn btn-outline-light">Quay lại</a>
+        </div>
+    </section>
+
+    <section class="admin-table-panel">
+        <div class="admin-table-panel__head">
+            <div>
+                <h2 class="admin-table-panel__title">Danh sách nhóm</h2>
+                <p class="admin-table-panel__desc">Tổng: @Model.Groups.Count nhóm</p>
+            </div>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên nhóm</th>
+                        <th>Thành viên</th>
+                        <th>Tin nhắn</th>
+                        <th>Ngày tạo</th>
+                        <th>Vào nhóm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var g in Model.Groups)
+                    {
+                        <tr>
+                            <td>@g.Id</td>
+                            <td>@g.Name</td>
+                            <td>@g.MemberCount</td>
+                            <td>@g.MessageCount</td>
+                            <td>@g.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <a asp-page="/Groups/Chat" asp-route-conversationId="@g.Id" class="btn btn-secondary admin-btn-sm">
+                                    Xem
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,95 @@
+﻿@page
+@model SecureChat.Pages.Friends.FindUsersModel
+@{
+    ViewData["Title"] = "Tìm người dùng";
+}
+
+<div class="page-box-wide">
+    <h2>Tìm người dùng</h2>
+    <p class="text-muted">Tìm kiếm người dùng để gửi lời mời kết bạn.</p>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <form method="get" class="mb-4">
+        <div class="d-flex gap-3">
+            <input asp-for="Keyword" class="form-control" placeholder="Nhập tên, email hoặc số điện thoại" />
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </form>
+
+    @if (Model.Users.Any())
+    {
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>
+                                @if (user.IsOnline)
+                                {
+                                    <span class="badge-soft badge-success">Online</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft badge-danger">Offline</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.IsFriend)
+                                {
+                                    <span class="badge-soft badge-info">Bạn bè</span>
+                                }
+                                else if (user.IsPendingSent)
+                                {
+                                    <span class="badge-soft badge-warning">Đã gửi lời mời</span>
+                                }
+                                else if (user.IsPendingReceived)
+                                {
+                                    <a asp-page="/Friends/Requests" class="btn btn-secondary">Xem lời mời</a>
+                                }
+                                else
+                                {
+                                    <form method="post" asp-page-handler="SendRequest" style="display:inline;">
+                                        <input type="hidden" name="receiverId" value="@user.Id" />
+                                        <input type="hidden" name="Keyword" value="@Model.Keyword" />
+                                        <button type="submit" class="btn btn-primary">Kết bạn</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">Không tìm thấy người dùng phù hợp.</div>
+    }
+
+    <div class="mt-4">
+        <a asp-page="/Friends/Index" class="btn btn-outline-light">Danh sách bạn bè</a>
+        <a asp-page="/Friends/Requests" class="btn btn-outline-light">Lời mời kết bạn</a>
+    </div>
+</div>

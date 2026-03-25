@@ -1,0 +1,112 @@
+﻿@page
+@model SecureChat.Pages.TestRealtimeModel
+@{
+    ViewData["Title"] = "Test Realtime";
+}
+
+<div class="page-box">
+    <h2>Test Realtime SignalR</h2>
+
+    <div class="mb-3">
+        <label class="form-label">Tên của bạn</label>
+        <input type="text" id="senderInput" class="form-control" placeholder="Nhập tên..." />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Phòng</label>
+        <input type="text" id="roomInput" class="form-control" value="room1" />
+    </div>
+
+    <div class="mb-3 d-flex gap-2">
+        <button type="button" class="btn btn-secondary" id="joinBtn">Vào phòng</button>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tin nhắn</label>
+        <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn và nhấn Enter..." />
+    </div>
+
+    <div class="mb-3">
+        <button type="button" class="btn btn-primary" id="sendBtn">Gửi</button>
+    </div>
+
+    <hr />
+
+    <div id="messages" style="min-height:200px; padding:12px; border:1px solid #333; border-radius:10px;"></div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+    <script>
+        const senderInput = document.getElementById("senderInput");
+        const roomInput = document.getElementById("roomInput");
+        const messageInput = document.getElementById("messageInput");
+        const joinBtn = document.getElementById("joinBtn");
+        const sendBtn = document.getElementById("sendBtn");
+        const messagesDiv = document.getElementById("messages");
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        connection.on("ReceiveMessage", function (sender, message) {
+            const p = document.createElement("p");
+            p.innerHTML = `<strong>${escapeHtml(sender)}:</strong> ${escapeHtml(message)}`;
+            messagesDiv.appendChild(p);
+        });
+
+        connection.start()
+            .then(() => {
+                console.log("SignalR connected");
+            })
+            .catch(err => {
+                console.error("SignalR connect error:", err);
+                alert("Không kết nối được SignalR. Mở F12 -> Console để xem lỗi.");
+            });
+
+        joinBtn.addEventListener("click", async function () {
+            const room = roomInput.value.trim();
+            if (!room) return;
+
+            try {
+                await connection.invoke("JoinRoom", room);
+                alert("Đã vào phòng: " + room);
+            } catch (err) {
+                console.error(err);
+                alert("Join phòng lỗi");
+            }
+        });
+
+        async function sendMessage() {
+            const sender = senderInput.value.trim();
+            const room = roomInput.value.trim();
+            const msg = messageInput.value.trim();
+
+            if (!sender || !room || !msg) return;
+
+            try {
+                await connection.invoke("SendMessageToRoom", room, sender, msg);
+                messageInput.value = "";
+            } catch (err) {
+                console.error(err);
+                alert("Gửi tin nhắn lỗi");
+            }
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+
+        messageInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.innerText = text;
+            return div.innerHTML;
+        }
+    </script>
+}
