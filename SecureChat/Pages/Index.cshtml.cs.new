@@ -1,0 +1,2 @@
+// Test file
+namespace SecureChat.Pages { public class IndexModel { } }

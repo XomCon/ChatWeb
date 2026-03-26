@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SecureChat.Data;
@@ -14,10 +14,11 @@ namespace SecureChat.Pages.Friends
             _context = context;
         }
 
+        public List<FriendVm> Friends { get; set; } = new();
+        public int PendingCount { get; set; }
         public string SuccessMessage { get; set; } = string.Empty;
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public List<FriendVm> Friends { get; set; } = new();
 
         public class FriendVm
         {
@@ -48,6 +49,9 @@ namespace SecureChat.Pages.Friends
                 })
                 .OrderBy(f => f.FullName)
                 .ToListAsync();
+
+            PendingCount = await _context.FriendRequests
+                .CountAsync(fr => fr.ReceiverId == currentUserId && fr.Status == "Pending");
 
             if (TempData["SuccessMessage"] != null)
             {

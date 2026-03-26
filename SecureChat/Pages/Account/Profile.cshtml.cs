@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +24,7 @@ namespace SecureChat.Pages.Account
 
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
+        public string CurrentUserId { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
 
         public class ProfileInputModel

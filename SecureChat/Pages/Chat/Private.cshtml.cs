@@ -192,22 +192,24 @@ namespace SecureChat.Pages.Chat
                 ConversationId = commonConversationId;
             }
 
-            Messages = await _context.Messages
+            var dbMessages = await _context.Messages
                 .Where(m => m.ConversationId == ConversationId && !m.IsDeleted)
                 .OrderBy(m => m.SentAt)
-                .Select(m => new MessageVm
-                {
-                    Id = m.Id,
-                    SenderId = m.SenderId,
-                    SenderName = m.Sender != null
-                        ? (m.Sender.FullName ?? "Người dùng")
-                        : "Người dùng",
-                    Content = _encryptionService.Decrypt(m.EncryptedContent),
-                    SentAt = m.SentAt,
-                    IsSeen = m.IsSeen,
-                    IsMine = m.SenderId == CurrentUserId
-                })
                 .ToListAsync();
+
+            Messages = dbMessages.Select(m => new MessageVm
+            {
+                Id = m.Id,
+                SenderId = m.SenderId,
+                SenderName = m.Sender != null
+                    ? (m.Sender.FullName ?? "Người dùng")
+                    : "Người dùng",
+                Content = _encryptionService.Decrypt(m.EncryptedContent),
+                SentAt = m.SentAt,
+                IsSeen = m.IsSeen,
+                IsMine = m.SenderId == CurrentUserId
+            }).ToList();
+
 
             return null;
         }
