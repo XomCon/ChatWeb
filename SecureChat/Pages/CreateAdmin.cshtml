@@ -1,22 +1,51 @@
-﻿@page
+@page
 @model SecureChat.Pages.CreateAdminModel
 @{
-    ViewData["Title"] = "Create Admin";
+    ViewData["Title"] = "Coordinator Provisioning";
 }
 
-<div class="page-box">
-    <h2>Tạo tài khoản Admin</h2>
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; animation: fadeInUp 0.8s ease forwards;">
+    <div class="glass-card" style="max-width: 500px; padding: 50px; border-radius: 40px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <div style="width: 60px; height: 60px; border-radius: 18px; background: linear-gradient(135deg, #fbbf24, #d97706); display: flex; align-items: center; justify-content: center; color: #fff; margin: 0 auto 20px; box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);">
+                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h1 style="font-size: 28px; margin: 0;">Coordinator Provisioning</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">Kích hoạt tài khoản điều phối viên tối cao cho Cluster.</p>
+        </div>
 
-    <div class="alert alert-success">
-        @Model.Message
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="badge-soft @(Model.Message.Contains("thành công") ? "badge-emerald" : "badge-danger")" style="width: 100%; justify-content: center; padding: 12px; margin-bottom: 24px; border-radius: 12px;">
+                @Model.Message
+            </div>
+        }
+
+        <form method="post" style="display: grid; gap: 20px;">
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Admin Full Name</label>
+                <input asp-for="FullName" class="form-control" placeholder="Root Administrator" />
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Secure Access Email</label>
+                <input asp-for="Email" class="form-control" placeholder="admin@securechat.io" />
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label">Encryption Password</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="••••••••••••" />
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 12px; padding: 16px;">Provision Admin Node</button>
+            <a asp-page="/Account/Login" class="btn btn-outline-light" style="padding: 14px;">Return to Portal</a>
+        </form>
     </div>
-
-    <div class="alert alert-info">
-        Email: <strong>admin@securechat.com</strong><br />
-        Mật khẩu: <strong>12345678</strong>
-    </div>
-
-    <p>
-        <a asp-page="/Account/Login" class="btn btn-primary">Đi tới đăng nhập</a>
-    </p>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

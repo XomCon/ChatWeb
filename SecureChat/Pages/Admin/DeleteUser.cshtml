@@ -1,31 +1,51 @@
-﻿@page
+@page
 @model SecureChat.Pages.Admin.DeleteUserModel
 @{
-    ViewData["Title"] = "Xóa User";
+    ViewData["Title"] = "Node Termination Protocol";
 }
 
-<div class="page-box">
-    <h2>Xóa tài khoản</h2>
-    <div class="alert alert-warning">
-        Bạn có chắc muốn xóa tài khoản này không?
-    </div>
+<div class="admin-layout">
+    <partial name="_AdminSidebar" />
 
-    <div class="info-grid">
-        <div class="info-card">
-            <span class="label">Họ tên</span>
-            <span class="value">@Model.FullName</span>
-        </div>
-        <div class="info-card">
-            <span class="label">Email</span>
-            <span class="value">@Model.Email</span>
+    <div class="admin-main" style="animation: fadeInUp 0.8s ease forwards; display: flex; justify-content: center; align-items: flex-start; padding-top: 60px;">
+        <div class="glass-card" style="max-width: 500px; padding: 48px; border-radius: 40px; text-align: center; border-color: rgba(239, 68, 68, 0.2);">
+            <!-- Danger Icon -->
+            <div style="width: 80px; height: 80px; border-radius: 24px; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; box-shadow: 0 0 30px rgba(239, 68, 68, 0.1);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+
+            <h1 style="font-size: 24px; margin-bottom: 12px; color: #fff;">Terminal Confirmation</h1>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 32px;">Bạn đang thực hiện giao thức loại bỏ Node khỏi hệ thống. Hành động này không thể hoàn tác.</p>
+
+            <div class="glass-card" style="background: rgba(0,0,0,0.2); padding: 24px; border-radius: 20px; margin-bottom: 32px; text-align: left;">
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Identified Alias</div>
+                    <div style="font-weight: 800; color: #fff; font-size: 16px;">@Model.FullName</div>
+                </div>
+                <div>
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Secure Email Access</div>
+                    <div style="font-weight: 500; color: var(--text-secondary); font-size: 14px;">@Model.Email</div>
+                </div>
+            </div>
+
+            <form method="post">
+                <input type="hidden" asp-for="Id" />
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button type="submit" class="btn btn-danger" style="width: 100%; padding: 16px; font-weight: 900; background: #ef4444; border: none; color: #fff;">
+                        Xác nhận Termination
+                    </button>
+                    <a asp-page="/Admin/Users" class="btn btn-outline-light" style="width: 100%; padding: 14px;">
+                        Hủy giao thức (Escape)
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
-
-    <form method="post">
-        <input type="hidden" asp-for="Id" />
-        <div class="d-flex gap-3">
-            <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
-            <a asp-page="/Admin/Users" class="btn btn-outline-light">Hủy</a>
-        </div>
-    </form>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

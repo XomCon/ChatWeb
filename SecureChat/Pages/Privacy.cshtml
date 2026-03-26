@@ -1,8 +1,43 @@
-﻿@page
-@model PrivacyModel
+@page
+@model SecureChat.Pages.PrivacyModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Security & Privacy Protocol";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="page-box-wide" style="animation: fadeInUp 0.8s ease forwards;">
+    <div class="glass-card" style="padding: 60px; border-radius: 40px;">
+        <div style="margin-bottom: 40px;">
+            <div class="badge-soft badge-emerald" style="margin-bottom: 16px;">Encryption Policy</div>
+            <h1 style="font-size: 40px; margin: 0;">Protocol Disclosure</h1>
+            <p style="color: var(--text-muted); font-size: 16px; margin-top: 8px;">Công khai chính sách bảo mật và mã hóa dữ liệu SecureChat.</p>
+        </div>
+
+        <div style="display: grid; gap: 32px;">
+            <div style="padding-bottom: 32px; border-bottom: 1px solid var(--glass-border);">
+                <h3 style="font-size: 20px; color: var(--emerald-glow);">01. End-to-End Encryption</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8;">Tất cả các gói tin nhắn truyền tải qua SecureChat đều được bảo vệ bởi giao thức mã hóa đầu cuối (E2EE). Chỉ có Node gửi và Node nhận mới có thể giải mã nội dung.</p>
+            </div>
+
+            <div style="padding-bottom: 32px; border-bottom: 1px solid var(--glass-border);">
+                <h3 style="font-size: 20px; color: var(--emerald-glow);">02. Data Persistence</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8;">Chúng tôi không lưu giữ khóa giải mã (Decryption Keys) trên máy chủ. Mọi dữ liệu định danh được lưu trữ trong phân vùng biệt lập (Isolated Storage).</p>
+            </div>
+
+            <div>
+                <h3 style="font-size: 20px; color: var(--emerald-glow);">03. Identity Governance</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8;">SecureChat cam kết không chia sẻ dữ liệu Hub Activity cho bất kỳ bên thứ ba nào. Hệ thống Logs chỉ được sử dụng cho mục đích Forensic nội bộ.</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--glass-border); text-align: center;">
+            <p style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">LAST REVISION: 2024-SOC-09 // LEVEL 5 SECURE</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

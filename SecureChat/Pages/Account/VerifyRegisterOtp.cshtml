@@ -1,30 +1,63 @@
-﻿@page
+@page
 @model SecureChat.Pages.Account.VerifyRegisterOtpModel
 @{
-    ViewData["Title"] = "Xác thực OTP đăng ký";
+    ViewData["Title"] = "Hoàn tất khởi tạo danh tính";
 }
 
-<div class="auth-wrapper">
-    <div class="auth-card">
-        <h2 class="auth-title">Xác thực đăng ký</h2>
-        <p class="auth-subtitle">OTP đã được gửi đến: <strong>@Model.Email</strong></p>
+<div class="page-box" style="animation: fadeInUp 0.8s ease forwards; max-width: 450px; margin: 0 auto; min-height: calc(100vh - 200px); display: flex; flex-direction: column; justify-content: center;">
+    <div style="text-align: center; margin-bottom: 32px;">
+        <div style="width: 64px; height: 64px; border-radius: 20px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #38bdf8;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+        <h2 style="font-size: 24px; margin: 0;">Xác thực đăng ký</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">
+            Chào mừng bạn đến với SecureChat.<br/>
+            Nhập mã OTP gửi tới Gmail: <strong style="color: var(--text-secondary);">@Model.Email</strong>
+        </p>
+    </div>
 
-        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
-            <div class="alert alert-danger">@Model.ErrorMessage</div>
-        }
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger" style="border-radius: 12px; margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @Model.ErrorMessage
+        </div>
+    }
 
-        <form method="post">
-            <div class="mb-4">
-                <label asp-for="Input.OtpCode" class="form-label">Mã OTP</label>
-                <input asp-for="Input.OtpCode" class="form-control" placeholder="Nhập OTP" />
-                <span asp-validation-for="Input.OtpCode" class="text-danger"></span>
+    <div class="glass-card" style="padding: 32px; border-radius: 24px;">
+        <form method="post" id="otpForm">
+            <div class="form-group" style="margin-bottom: 32px;">
+                <label asp-for="Input.OtpCode" class="form-label" style="text-align: center; display: block; margin-bottom: 16px; letter-spacing: 0.05em; text-transform: uppercase; font-size: 11px; font-weight: 800;">Mã kích hoạt định danh</label>
+                <div style="position: relative;">
+                    <input asp-for="Input.OtpCode" class="form-control" style="text-align: center; font-size: 24px; letter-spacing: 0.5em; height: 60px; font-weight: 900; background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.05);" placeholder="••••••" maxlength="6" autocomplete="one-time-code" />
+                </div>
+                <span asp-validation-for="Input.OtpCode" class="text-danger" style="text-align: center; display: block; margin-top: 8px;"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Xác nhận</button>
+            <button type="submit" class="btn btn-primary w-100" style="padding: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; background: linear-gradient(135deg, #38bdf8, #0ea5e9); border: none;">
+                Kích hoạt tài khoản
+            </button>
         </form>
     </div>
+
+    <div style="text-align: center; margin-top: 32px;">
+        <p style="font-size: 13px; color: var(--text-muted);">
+            Nhập sai thông tin? <a asp-page="/Account/Register" style="color: #38bdf8; font-weight: 800; text-decoration: none;">Đăng ký lại</a>
+        </p>
+    </div>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .form-control:focus {
+        background: rgba(0,0,0,0.3) !important;
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

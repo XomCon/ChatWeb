@@ -1,84 +1,138 @@
-﻿@page
+@page
 @model SecureChat.Pages.Account.ProfileModel
 @{
-    ViewData["Title"] = "Hồ sơ cá nhân";
+    ViewData["Title"] = "Hồ sơ Node định danh";
     var avatarText = !string.IsNullOrWhiteSpace(Model.Input.FullName)
         ? Model.Input.FullName.Substring(0, 1).ToUpper()
         : "U";
 }
 
-<div class="page-box">
-    <div class="profile-header">
-        @if (!string.IsNullOrWhiteSpace(Model.Input.AvatarUrl))
-        {
-            <img src="@Model.Input.AvatarUrl" alt="Avatar" class="profile-avatar" />
-        }
-        else
-        {
-            <div class="profile-avatar-placeholder">@avatarText</div>
-        }
+<div class="page-box-wide" style="animation: fadeInUp 0.8s ease forwards; max-width: 900px; margin: 0 auto;">
+    <!-- ── Profile Identity Header ── -->
+    <div class="glass-card" style="padding: 40px; margin-bottom: 32px; display: flex; align-items: center; gap: 32px; position: relative; overflow: hidden; border-radius: 30px;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: var(--emerald); filter: blur(100px); opacity: 0.1;"></div>
+        
+        <div style="position: relative;">
+            @if (!string.IsNullOrWhiteSpace(Model.Input.AvatarUrl))
+            {
+                <div style="width: 120px; height: 120px; border-radius: 30px; border: 2px solid var(--emerald); padding: 4px; background: rgba(16, 185, 129, 0.1);">
+                    <img src="@Model.Input.AvatarUrl" alt="Avatar" style="width: 100%; height: 100%; border-radius: 24px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
+                </div>
+            }
+            else
+            {
+                <div style="width: 120px; height: 120px; border-radius: 30px; background: linear-gradient(135deg, var(--bg-accent), var(--bg-panel)); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 900; color: var(--emerald-glow); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    @avatarText
+                </div>
+            }
+            <div style="position: absolute; bottom: -4px; right: -4px; width: 28px; height: 28px; border-radius: 50%; background: var(--bg-panel); border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--emerald);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+        </div>
 
-        <div class="profile-meta">
-            <h2>@Model.Input.FullName</h2>
-            <p>@Model.Email</p>
-            <p>
-                <span class="badge-soft badge-info">@Model.Role</span>
-            </p>
+        <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <h2 style="font-size: 28px; margin: 0; font-weight: 800;">@Model.Input.FullName</h2>
+                <span class="badge-soft badge-emerald" style="font-size: 10px; padding: 2px 10px;">@Model.Role Node</span>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; opacity: 0.8; font-family: 'JetBrains Mono', monospace;">@Model.Email</p>
+            
+            <div style="display: flex; gap: 12px;">
+                <div style="padding: 8px 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column;">
+                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Node ID</span>
+                    <span style="font-size: 12px; color: #fff; font-weight: 600;">#SC-@Model.CurrentUserId.ToString().ToUpper().Substring(0, 8)</span>
+                </div>
+                <div style="padding: 8px 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column;">
+                    <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Joined Matrix</span>
+                    <span style="font-size: 12px; color: #fff; font-weight: 600;">@Model.CreatedAt.ToString("MMM yyyy")</span>
+                </div>
+            </div>
         </div>
     </div>
 
     @if (!string.IsNullOrEmpty(Model.SuccessMessage))
     {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
+        <div class="alert alert-success" style="border-radius: 12px; margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><polyline points="20 6 9 17 4 12"/></svg>
+            @Model.SuccessMessage
+        </div>
     }
 
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
-        <div class="alert alert-danger">@Model.ErrorMessage</div>
+        <div class="alert alert-danger" style="border-radius: 12px; margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @Model.ErrorMessage
+        </div>
     }
 
-    <div class="info-grid">
-        <div class="info-card">
-            <span class="label">Email</span>
-            <span class="value">@Model.Email</span>
+    <div style="display: grid; grid-template-columns: 1fr 280px; gap: 32px;">
+        <!-- Edit Details -->
+        <div class="glass-card" style="padding: 32px; border-radius: 24px;">
+            <h4 style="font-size: 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Cập nhật thông tin định danh
+            </h4>
+
+            <form method="post">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label asp-for="Input.FullName" class="form-label">Họ và tên</label>
+                    <input asp-for="Input.FullName" class="form-control" placeholder="Nhập họ tên đầy đủ" />
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label asp-for="Input.PhoneNumber" class="form-label">Số điện thoại</label>
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Nhập số điện thoại liên lạc" />
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 32px;">
+                    <label asp-for="Input.AvatarUrl" class="form-label">Identity Metadata (Avatar URL)</label>
+                    <input asp-for="Input.AvatarUrl" class="form-control" placeholder="Dán link ảnh đại diện (mã hóa)" />
+                    <span asp-validation-for="Input.AvatarUrl" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" style="padding: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em;">
+                    Lưu cấu hình Node
+                </button>
+            </form>
         </div>
-        <div class="info-card">
-            <span class="label">Vai trò</span>
-            <span class="value">@Model.Role</span>
-        </div>
-        <div class="info-card">
-            <span class="label">Ngày tạo tài khoản</span>
-            <span class="value">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+
+        <!-- Secondary Actions -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="glass-card" style="padding: 24px; border-radius: 20px; background: rgba(56, 189, 248, 0.03); border-color: rgba(56, 189, 248, 0.1);">
+                 <h5 style="font-size: 13px; color: #38bdf8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Security Protocol</h5>
+                 <div style="display: flex; flex-direction: column; gap: 12px;">
+                     <a asp-page="/Account/ChangePassword" class="btn btn-outline-light w-100" style="font-size: 12px; justify-content: center; padding: 10px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Đổi mật khẩu
+                     </a>
+                     <a asp-page="/Account/ForgotPassword" class="btn btn-outline-light w-100" style="font-size: 12px; justify-content: center; padding: 10px; color: #fbbf24; border-color: rgba(251, 191, 36, 0.2);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+                        Quên mật khẩu?
+                     </a>
+                 </div>
+            </div>
+
+            <div class="glass-card" style="padding: 20px; border-radius: 20px; text-align: center; background: transparent; border-style: dashed;">
+                 <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Cần quay lại trung tâm điều khiển?</p>
+                 <a asp-page="/Index" class="btn btn-outline-light w-100" style="font-size: 11px; justify-content: center; padding: 8px;">Về trang chủ</a>
+            </div>
         </div>
     </div>
-
-    <form method="post">
-        <div class="mb-3">
-            <label asp-for="Input.FullName" class="form-label"></label>
-            <input asp-for="Input.FullName" class="form-control" placeholder="Nhập họ tên" />
-            <span asp-validation-for="Input.FullName" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Input.PhoneNumber" class="form-label"></label>
-            <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
-            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-        </div>
-
-        <div class="mb-4">
-            <label asp-for="Input.AvatarUrl" class="form-label"></label>
-            <input asp-for="Input.AvatarUrl" class="form-control" placeholder="Dán link ảnh đại diện" />
-            <span asp-validation-for="Input.AvatarUrl" class="text-danger"></span>
-        </div>
-
-        <div class="d-flex gap-3">
-            <button type="submit" class="btn btn-primary">Cập nhật hồ sơ</button>
-            <a asp-page="/Account/ChangePassword" class="btn btn-outline-light">Đổi mật khẩu</a>
-            <a asp-page="/Account/ForgotPassword" class="btn btn-outline-light">Quên mật khẩu</a>
-            <a asp-page="/Index" class="btn btn-outline-light">Về trang chủ</a>
-        </div>
-    </form>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @@media (max-width: 800px) {
+        div[style*="grid-template-columns: 1fr 280px"] { grid-template-columns: 1fr !important; }
+        .page-box-wide { padding: 12px !important; }
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

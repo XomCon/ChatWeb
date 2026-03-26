@@ -1,109 +1,162 @@
-﻿@page
+@page
 @model SecureChat.Pages.Friends.RequestsModel
 @{
-    ViewData["Title"] = "Lời mời kết bạn";
+    ViewData["Title"] = "Yêu cầu kết nối";
 }
 
-<div class="page-box-wide">
-    <h2>Lời mời kết bạn</h2>
+<div class="page-box-wide" style="animation: fadeInUp 0.8s ease forwards;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <div>
+            <h2 style="font-size: 28px; margin: 0;">Yêu cầu kết nối</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Xử lý các tín hiệu yêu cầu gia nhập mạng lưới liên lạc của bạn.</p>
+        </div>
+        <a asp-page="/Friends/Index" class="btn btn-outline-light">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Quay lại danh sách
+        </a>
+    </div>
 
     @if (!string.IsNullOrEmpty(Model.SuccessMessage))
     {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
+        <div class="alert alert-success" style="border-radius: 12px; margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><polyline points="20 6 9 17 4 12"/></svg>
+            @Model.SuccessMessage
+        </div>
     }
 
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
-        <div class="alert alert-danger">@Model.ErrorMessage</div>
+        <div class="alert alert-danger" style="border-radius: 12px; margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @Model.ErrorMessage
+        </div>
     }
 
-    <div class="mt-4">
-        <h3>Lời mời nhận được</h3>
-
-        @if (Model.IncomingRequests.Any())
-        {
-            <div class="table-wrap">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Người gửi</th>
-                            <th>Email</th>
-                            <th>Ngày gửi</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.IncomingRequests)
-                        {
-                            <tr>
-                                <td>@item.FullName</td>
-                                <td>@item.Email</td>
-                                <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>
-                                    <form method="post" asp-page-handler="Accept" style="display:inline;">
-                                        <input type="hidden" name="requestId" value="@item.Id" />
-                                        <button type="submit" class="btn btn-success">Chấp nhận</button>
-                                    </form>
-
-                                    <form method="post" asp-page-handler="Reject" style="display:inline; margin-left:8px;">
-                                        <input type="hidden" name="requestId" value="@item.Id" />
-                                        <button type="submit" class="btn btn-danger">Từ chối</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+    <div style="display: grid; grid-template-columns: 1fr; gap: 48px;">
+        <!-- ── Incoming Requests ── -->
+        <section>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; color: var(--emerald);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </div>
+                <h3 style="font-size: 18px; margin: 0;">Tín hiệu nhận được</h3>
+                <span class="badge-soft badge-emerald" style="margin-left: auto;">@Model.IncomingRequests.Count Pending</span>
             </div>
-        }
-        else
-        {
-            <div class="alert alert-info">Bạn chưa có lời mời kết bạn nào.</div>
-        }
-    </div>
 
-    <div class="mt-5">
-        <h3>Lời mời đã gửi</h3>
-
-        @if (Model.SentRequests.Any())
-        {
-            <div class="table-wrap">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Người nhận</th>
-                            <th>Email</th>
-                            <th>Ngày gửi</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.SentRequests)
-                        {
+            @if (Model.IncomingRequests.Any())
+            {
+                <div class="glass-card">
+                    <table class="premium-table">
+                        <thead>
                             <tr>
-                                <td>@item.FullName</td>
-                                <td>@item.Email</td>
-                                <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>
-                                    <form method="post" asp-page-handler="Cancel" style="display:inline;">
-                                        <input type="hidden" name="requestId" value="@item.Id" />
-                                        <button type="submit" class="btn btn-danger">Hủy lời mời</button>
-                                    </form>
-                                </td>
+                                <th>Người gửi</th>
+                                <th>Gmail Identity</th>
+                                <th>Thời gian</th>
+                                <th style="text-align: right;">Thao tác</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-info">Bạn chưa gửi lời mời kết bạn nào.</div>
-        }
-    </div>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.IncomingRequests)
+                            {
+                                <tr>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--bg-accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--emerald-glow);">
+                                                @(string.IsNullOrWhiteSpace(item.FullName) ? "U" : item.FullName.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <span style="font-weight: 700;">@item.FullName</span>
+                                        </div>
+                                    </td>
+                                    <td><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; opacity: 0.8;">@item.Email</span></td>
+                                    <td><span style="font-size: 13px; opacity: 0.6;">@item.CreatedAt.ToString("dd MMM, HH:mm")</span></td>
+                                    <td style="text-align: right;">
+                                        <div style="display: inline-flex; gap: 8px;">
+                                            <form method="post" asp-page-handler="Accept">
+                                                <input type="hidden" name="requestId" value="@item.Id" />
+                                                <button type="submit" class="btn btn-primary" style="padding: 8px 16px; font-size: 12px;">Chấp nhận</button>
+                                            </form>
 
-    <div class="mt-4">
-        <a asp-page="/Friends/FindUsers" class="btn btn-outline-light">Tìm người dùng</a>
-        <a asp-page="/Friends/Index" class="btn btn-outline-light">Danh sách bạn bè</a>
+                                            <form method="post" asp-page-handler="Reject">
+                                                <input type="hidden" name="requestId" value="@item.Id" />
+                                                <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 12px;">Từ chối</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="glass-card" style="padding: 40px; text-align: center; border-style: dashed; background: transparent;">
+                    <p style="color: var(--text-muted); margin: 0; font-size: 14px;">Không có yêu cầu kết nối nào đang chờ xử lý.</p>
+                </div>
+            }
+        </section>
+
+        <!-- ── Sent Requests ── -->
+        <section>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(56, 189, 248, 0.1); display: flex; align-items: center; justify-content: center; color: #38bdf8;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h3 style="font-size: 18px; margin: 0;">Tín hiệu đã gửi</h3>
+                <span class="badge-soft" style="margin-left: auto; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2);">@Model.SentRequests.Count Sent</span>
+            </div>
+
+            @if (Model.SentRequests.Any())
+            {
+                <div class="glass-card">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>Người nhận</th>
+                                <th>Gmail Identity</th>
+                                <th>Thời gian</th>
+                                <th style="text-align: right;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.SentRequests)
+                            {
+                                <tr>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #fff;">
+                                                @(string.IsNullOrWhiteSpace(item.FullName) ? "U" : item.FullName.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <span style="font-weight: 700;">@item.FullName</span>
+                                        </div>
+                                    </td>
+                                    <td><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; opacity: 0.8;">@item.Email</span></td>
+                                    <td><span style="font-size: 13px; opacity: 0.6;">@item.CreatedAt.ToString("dd MMM, HH:mm")</span></td>
+                                    <td style="text-align: right;">
+                                        <form method="post" asp-page-handler="Cancel">
+                                            <input type="hidden" name="requestId" value="@item.Id" />
+                                            <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 12px;">Hủy yêu cầu</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="glass-card" style="padding: 40px; text-align: center; border-style: dashed; background: transparent;">
+                    <p style="color: var(--text-muted); margin: 0; font-size: 14px;">Bạn chưa gửi yêu cầu kết nối nào.</p>
+                </div>
+            }
+        </section>
     </div>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

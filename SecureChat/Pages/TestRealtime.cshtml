@@ -1,38 +1,66 @@
-﻿@page
+@page
 @model SecureChat.Pages.TestRealtimeModel
 @{
-    ViewData["Title"] = "Test Realtime";
+    ViewData["Title"] = "SignalR Diagnostic Portal";
 }
 
-<div class="page-box">
-    <h2>Test Realtime SignalR</h2>
-
-    <div class="mb-3">
-        <label class="form-label">Tên của bạn</label>
-        <input type="text" id="senderInput" class="form-control" placeholder="Nhập tên..." />
+<div class="page-box-wide" style="animation: fadeInUp 0.8s ease forwards;">
+    <div class="admin-header">
+        <div>
+            <div class="badge-soft badge-info" style="margin-bottom: 12px;">Real-time Socket Audit</div>
+            <h1>SignalR Diagnostic Portal</h1>
+            <p>Kiểm tra tính toàn vẹn của kết nối Real-time Hub và giao thức truyền tin.</p>
+        </div>
+        <div class="badge-soft badge-emerald">
+            <div id="connStatusDot" class="status-dot status-dot--offline" style="margin-right:8px"></div>
+            <span id="connStatusText">Hub Disconnected</span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Phòng</label>
-        <input type="text" id="roomInput" class="form-control" value="room1" />
+    <div style="display: grid; grid-template-columns: 350px 1fr; gap: 24px;">
+        <!-- Control Panel -->
+        <div class="glass-card" style="padding: 32px; border-radius: 30px;">
+            <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 24px;">Transmission Config</h4>
+            
+            <div class="form-group">
+                <label class="form-label">Source Alias (Tên)</label>
+                <input type="text" id="senderInput" class="form-control" placeholder="Nhập định danh..." />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Target Hub Cluster (Phòng)</label>
+                <input type="text" id="roomInput" class="form-control" value="room1" />
+            </div>
+
+            <button type="button" class="btn btn-outline-light" id="joinBtn" style="width: 100%; margin-bottom: 32px;">
+                Initialize Join Protocol
+            </button>
+
+            <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 24px;">Data Payload</h4>
+            
+            <div class="form-group">
+                <label class="form-label">Message Packet</label>
+                <input type="text" id="messageInput" class="form-control" placeholder="Nhập payload..." />
+            </div>
+
+            <button type="button" class="btn btn-primary" id="sendBtn" style="width: 100%;">
+                Broadcast Packet
+            </button>
+        </div>
+
+        <!-- Monitor Panel -->
+        <div class="glass-card" style="padding: 0; border-radius: 30px; display: flex; flex-direction: column;">
+            <div style="padding: 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 16px; margin: 0;">Packet Monitor</h3>
+                <span class="badge-soft badge-info" style="font-size: 10px;">Forensic Feed</span>
+            </div>
+            
+            <div id="messages" style="flex: 1; padding: 24px; min-height: 400px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-secondary); overflow-y: auto; background: rgba(0,0,0,0.2);">
+                <!-- Logs will appear here -->
+                <div style="color: var(--text-muted);">[SYSTEM] Waiting for SignalR handshake...</div>
+            </div>
+        </div>
     </div>
-
-    <div class="mb-3 d-flex gap-2">
-        <button type="button" class="btn btn-secondary" id="joinBtn">Vào phòng</button>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Tin nhắn</label>
-        <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn và nhấn Enter..." />
-    </div>
-
-    <div class="mb-3">
-        <button type="button" class="btn btn-primary" id="sendBtn">Gửi</button>
-    </div>
-
-    <hr />
-
-    <div id="messages" style="min-height:200px; padding:12px; border:1px solid #333; border-radius:10px;"></div>
 </div>
 
 @section Scripts {
@@ -45,24 +73,51 @@
         const joinBtn = document.getElementById("joinBtn");
         const sendBtn = document.getElementById("sendBtn");
         const messagesDiv = document.getElementById("messages");
+        const connStatusDot = document.getElementById("connStatusDot");
+        const connStatusText = document.getElementById("connStatusText");
+
+        function log(msg, type = 'system') {
+            const div = document.createElement("div");
+            div.style.marginBottom = "8px";
+            div.style.padding = "8px 12px";
+            div.style.borderRadius = "8px";
+            
+            if (type === 'receive') {
+                div.style.background = "rgba(16, 185, 129, 0.05)";
+                div.style.borderLeft = "2px solid var(--emerald)";
+                div.innerHTML = `<span style="color:var(--emerald-glow)">[RECEIVE]</span> ${msg}`;
+            } else if (type === 'error') {
+                div.style.background = "rgba(239, 68, 68, 0.05)";
+                div.style.borderLeft = "2px solid #ef4444";
+                div.innerHTML = `<span style="color:#fca5a5">[ERROR]</span> ${msg}`;
+            } else {
+                div.style.color = "var(--text-muted)";
+                div.innerHTML = `<span>[SYSTEM]</span> ${msg}`;
+            }
+            
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub")
             .build();
 
         connection.on("ReceiveMessage", function (sender, message) {
-            const p = document.createElement("p");
-            p.innerHTML = `<strong>${escapeHtml(sender)}:</strong> ${escapeHtml(message)}`;
-            messagesDiv.appendChild(p);
+            log(`<strong>${escapeHtml(sender)}:</strong> ${escapeHtml(message)}`, 'receive');
         });
 
         connection.start()
             .then(() => {
-                console.log("SignalR connected");
+                log("SignalR connection established safely.");
+                connStatusDot.className = "status-dot status-dot--online";
+                connStatusText.innerText = "Hub Connected & Secure";
             })
             .catch(err => {
-                console.error("SignalR connect error:", err);
-                alert("Không kết nối được SignalR. Mở F12 -> Console để xem lỗi.");
+                log("Connection sequence failed: " + err, 'error');
+                connStatusDot.className = "status-dot";
+                connStatusDot.style.background = "#ef4444";
+                connStatusText.innerText = "Protocol Fault";
             });
 
         joinBtn.addEventListener("click", async function () {
@@ -71,10 +126,9 @@
 
             try {
                 await connection.invoke("JoinRoom", room);
-                alert("Đã vào phòng: " + room);
+                log(`Successfully joined Hub Cluster: ${room}`);
             } catch (err) {
-                console.error(err);
-                alert("Join phòng lỗi");
+                log("Join protocol failed: " + err, 'error');
             }
         });
 
@@ -87,10 +141,10 @@
 
             try {
                 await connection.invoke("SendMessageToRoom", room, sender, msg);
+                log(`Broadcast successful to Cluster: ${room}`);
                 messageInput.value = "";
             } catch (err) {
-                console.error(err);
-                alert("Gửi tin nhắn lỗi");
+                log("Broadcast failed: " + err, 'error');
             }
         }
 
@@ -110,3 +164,10 @@
         }
     </script>
 }
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

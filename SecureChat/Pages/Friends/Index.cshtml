@@ -1,73 +1,112 @@
-﻿@page
+@page
 @model SecureChat.Pages.Friends.IndexModel
 @{
-    ViewData["Title"] = "Danh sách bạn bè";
+    ViewData["Title"] = "Mạng lưới kết nối";
 }
 
-<div class="page-box-wide">
-    <h2>Danh sách bạn bè</h2>
+<div class="page-box-wide" style="animation: fadeInUp 0.8s ease forwards;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <div>
+            <h2 style="font-size: 28px; margin: 0;">Mạng lưới bạn bè</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Quản lý các Node liên lạc đã được xác thực trong hệ thống.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a asp-page="/Friends/Requests" class="btn btn-outline-light">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"/><path d="m22 9-10 7L2 9"/></svg>
+                Lời mời @(Model.PendingCount > 0 ? $"({Model.PendingCount})" : "")
+            </a>
+            <a asp-page="/Friends/FindUsers" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                Tìm kiếm Node
+            </a>
+        </div>
+    </div>
 
     @if (!string.IsNullOrEmpty(Model.SuccessMessage))
     {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
+        <div class="alert alert-success" style="border-radius: 12px; margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><polyline points="20 6 9 17 4 12"/></svg>
+            @Model.SuccessMessage
+        </div>
     }
 
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
-        <div class="alert alert-danger">@Model.ErrorMessage</div>
+        <div class="alert alert-danger" style="border-radius: 12px; margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @Model.ErrorMessage
+        </div>
     }
 
     @if (Model.Friends.Any())
     {
-        <div class="table-wrap">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th>Số điện thoại</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var friend in Model.Friends)
-                    {
-                        <tr>
-                            <td>@friend.FullName</td>
-                            <td>@friend.Email</td>
-                            <td>@friend.PhoneNumber</td>
-                            <td>
-                                @if (friend.IsOnline)
-                                {
-                                    <span class="badge-soft badge-success">Online</span>
-                                }
-                                else
-                                {
-                                    <span class="badge-soft badge-danger">Offline</span>
-                                }
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-secondary" disabled>Chat riêng</button>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+            @foreach (var friend in Model.Friends)
+            {
+                <div class="glass-card" style="padding: 24px; transition: var(--transition-bounce); position: relative; overflow: hidden;">
+                    <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 20px;">
+                        <div style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #fff; position: relative;">
+                            @(string.IsNullOrWhiteSpace(friend.FullName) ? "U" : friend.FullName.Substring(0, 1).ToUpper())
+                            
+                            <!-- Status Dot -->
+                            <div style="position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--bg-panel); background: @(friend.IsOnline ? "var(--emerald)" : "#6b7280"); box-shadow: @(friend.IsOnline ? "0 0 10px var(--emerald)" : "none");"></div>
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 16px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@friend.FullName</h4>
+                            <p style="color: var(--text-muted); font-size: 12px; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@friend.Email</p>
+                        </div>
+                    </div>
 
-                                <form method="post" asp-page-handler="Remove" style="display:inline; margin-left:8px;">
-                                    <input type="hidden" name="friendUserId" value="@friend.UserId" />
-                                    <button type="submit" class="btn btn-danger">Xóa bạn</button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.03);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Phone</span>
+                            <span style="font-size: 12px; color: var(--text-secondary);">@friend.PhoneNumber</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Status</span>
+                            <span class="badge-soft @(friend.IsOnline ? "badge-emerald" : "")" style="font-size: 10px; padding: 2px 8px;">
+                                @(friend.IsOnline ? "Encrypted Link Active" : "Node Offline")
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <a asp-page="/Chat/Index" asp-route-toUserId="@friend.UserId" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 13px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Secure Chat
+                        </a>
+                        <form method="post" asp-page-handler="Remove" style="display: contents;">
+                            <input type="hidden" name="friendUserId" value="@friend.UserId" />
+                            <button type="submit" class="btn btn-danger" style="padding: 10px; width: 42px;" title="Xóa bạn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1-1-2-2-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
         </div>
     }
     else
     {
-        <div class="alert alert-info">Bạn chưa có bạn bè nào.</div>
+        <div class="glass-card" style="padding: 60px; text-align: center;">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: var(--text-muted);">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            </div>
+            <h3 style="font-size: 20px; color: #fff;">Chưa có Node liên kết</h3>
+            <p style="color: var(--text-muted); max-width: 400px; margin: 8px auto 24px;">Hãy tìm kiếm người dùng mới để xây dựng mạng lưới liên lạc bảo mật của riêng bạn.</p>
+            <a asp-page="/Friends/FindUsers" class="btn btn-primary">Tìm kiếm bạn bè</a>
+        </div>
     }
-
-    <div class="mt-4">
-        <a asp-page="/Friends/FindUsers" class="btn btn-primary">Tìm người dùng</a>
-        <a asp-page="/Friends/Requests" class="btn btn-outline-light">Lời mời kết bạn</a>
-    </div>
 </div>
+
+<style>
+    .glass-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(16, 185, 129, 0.2);
+    }
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

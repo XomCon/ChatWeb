@@ -1,65 +1,59 @@
 @page
 @model SecureChat.Pages.Chat.PrivateModel
 @{
-    ViewData["Title"] = "Chat riêng";
+    ViewData["Title"] = $"Chat: {Model.FriendName}";
 }
 
-<div class="page-box-wide">
-    <div class="d-flex justify-between align-center mb-4">
-        <div>
-            <h2>Chat với @Model.FriendName</h2>
-            <div id="friendStatus">
-                @if (Model.FriendIsOnline)
-                {
-                    <span class="badge-soft badge-success">Online</span>
-                }
-                else
-                {
-                    <span class="badge-soft badge-danger">Offline</span>
-                }
+<div class="chat-container-layout" style="height: calc(100vh - 160px); display: flex; flex-direction: column; animation: fadeInUp 0.8s ease forwards;">
+    <!-- ── Chat Header ── -->
+    <div class="glass-card" style="padding: 16px 24px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; border-radius: 20px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="position: relative;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--emerald-dark), var(--emerald)); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff;">
+                    @(string.IsNullOrWhiteSpace(Model.FriendName) ? "U" : Model.FriendName.Substring(0, 1).ToUpper())
+                </div>
+                <div id="friendStatusIndicator" style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg-panel); @(Model.FriendIsOnline ? "background: var(--emerald); box-shadow: 0 0 8px var(--emerald);" : "background: #6b7280;")"></div>
             </div>
-            <p class="text-muted">@Model.FriendEmail</p>
+            <div>
+                <h3 style="font-size: 16px; margin: 0;">@Model.FriendName</h3>
+                <div id="friendStatusText" style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                    @if (Model.FriendIsOnline)
+                    {
+                        <span style="color: var(--emerald-glow);">Encrypted Link Active</span>
+                    }
+                    else
+                    {
+                        <span>Node Offline</span>
+                    }
+                </div>
+            </div>
         </div>
-        <div>
-            <a asp-page="/Chat/Index" class="btn btn-outline-light">Quay lại</a>
+        <div style="display: flex; gap: 10px;">
+             <div class="badge-soft badge-emerald" style="font-size: 10px; height: 32px;">E2EE Secured</div>
+             <a asp-page="/Chat/Index" class="btn btn-outline-light" style="padding: 8px 12px; height: 32px; font-size: 12px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><path d="m15 18-6-6 6-6"/></svg>Quay lại
+             </a>
         </div>
     </div>
 
-    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-    {
-        <div class="alert alert-danger">@Model.ErrorMessage</div>
-    }
-
-    <div class="chat-window">
-        <div class="chat-header">
-            Cuộc trò chuyện riêng
-        </div>
-
-        <div class="chat-messages" id="chatMessages">
+    <!-- ── Messages Area ── -->
+    <div class="glass-card" style="flex: 1; margin-bottom: 20px; display: flex; flex-direction: column; overflow: hidden; border-radius: 24px; background: rgba(10, 12, 16, 0.4);">
+        <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth;">
             @if (Model.Messages.Any())
             {
                 @foreach (var message in Model.Messages)
                 {
-                    <div class="message-row @(message.IsMine ? "mine" : "other")">
-                        <div class="message-bubble">
-                            @if (!message.IsMine)
-                            {
-                                <div style="font-size:12px; opacity:0.8; margin-bottom:6px;">
-                                    @message.SenderName
-                                </div>
-                            }
-
-                            <div>@message.Content</div>
-
-                            <div style="font-size:11px; opacity:0.75; margin-top:8px;">
-                                @message.SentAt.ToString("dd/MM/yyyy HH:mm")
-                            </div>
-
+                    <div class="message-row @(message.IsMine ? "mine" : "other")" style="display: flex; flex-direction: column; align-items: @(message.IsMine ? "flex-end" : "flex-start");">
+                        <div class="message-bubble" style="max-width: 75%; padding: 12px 18px; border-radius: 18px; font-size: 14px; line-height: 1.5; position: relative; @(message.IsMine ? "background: linear-gradient(135deg, var(--emerald), var(--emerald-dark)); color: #fff; border-bottom-right-radius: 4px;" : "background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #fff; border-bottom-left-radius: 4px;")">
+                            @message.Content
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 0 4px;">
+                            <span style="font-size: 10px; color: var(--text-muted);">@message.SentAt.ToString("HH:mm")</span>
                             @if (message.IsMine)
                             {
-                                <div class="message-status @(message.IsSeen ? "text-success" : "text-muted")" style="font-size: 10px; text-align: right; margin-top: 4px;">
-                                    @(message.IsSeen ? "Đã xem" : "Đã gửi")
-                                </div>
+                                <span class="message-status-icon-@message.Id" style="color: @(message.IsSeen ? "var(--emerald-glow)" : "var(--text-muted)");">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
                             }
                         </div>
                     </div>
@@ -67,21 +61,54 @@
             }
             else
             {
-                <div class="alert alert-info no-messages">Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện.</div>
+                <div id="noMessagesPlaceholder" style="margin: auto; text-align: center; opacity: 0.5;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <p style="font-size: 13px;">Khởi tạo đường truyền. Chưa có dữ liệu tin nhắn.</p>
+                </div>
             }
         </div>
 
-        <div id="typingStatus" style="font-size: 12px; color: var(--text-soft); padding: 4px 12px; height: 20px; font-style: italic;"></div>
+        <!-- ── Typing Indicator ── -->
+        <div id="typingStatus" style="height: 24px; padding: 0 24px; font-size: 11px; color: var(--emerald-glow); font-weight: 600; font-style: italic;"></div>
+    </div>
 
-        <div class="chat-input">
+    <!-- ── Input Area ── -->
+    <div class="glass-card" style="padding: 12px; border-radius: 20px; background: rgba(255, 255, 255, 0.03);">
+        <div style="display: flex; gap: 12px; align-items: center;">
             <input type="hidden" id="conversationId" value="@Model.ConversationId" />
             <input type="hidden" id="currentUserId" value="@Model.CurrentUserId" />
             <input type="hidden" id="friendUserId" value="@Model.FriendUserId" />
-            <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn..." autocomplete="off" />
-            <button type="button" id="sendBtn" class="btn btn-primary">Gửi</button>
+            
+            <div style="position: relative; flex: 1;">
+                 <input type="text" id="messageInput" class="form-control" style="height: 48px; border-radius: 12px; background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.05); padding-right: 48px;" placeholder="Gửi tin nhắn mã hóa..." autocomplete="off" />
+                 <div style="position: absolute; right: 12px; top: 12px; color: var(--text-muted);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                 </div>
+            </div>
+            
+            <button type="button" id="sendBtn" class="btn btn-primary" style="width: 48px; height: 48px; border-radius: 12px; padding: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
         </div>
     </div>
 </div>
+
+<style>
+    #chatMessages::-webkit-scrollbar { width: 6px; }
+    #chatMessages::-webkit-scrollbar-track { background: transparent; }
+    #chatMessages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+    #chatMessages::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.2); }
+    
+    .message-bubble {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+    .message-row:hover .message-bubble {
+        transform: scale(1.01);
+    }
+</style>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
@@ -100,46 +127,46 @@
 
         connection.on("UserStatusChanged", function (userId, isOnline) {
             if (userId === "@Model.FriendUserId") {
-                const statusDiv = document.getElementById("friendStatus");
+                const indicator = document.getElementById("friendStatusIndicator");
+                const text = document.getElementById("friendStatusText");
                 if (isOnline) {
-                    statusDiv.innerHTML = '<span class="badge-soft badge-success">Online</span>';
+                    indicator.style.background = "var(--emerald)";
+                    indicator.style.boxShadow = "0 0 8px var(--emerald)";
+                    text.innerHTML = '<span style="color: var(--emerald-glow);">Encrypted Link Active</span>';
                 } else {
-                    statusDiv.innerHTML = '<span class="badge-soft badge-danger">Offline</span>';
+                    indicator.style.background = "#6b7280";
+                    indicator.style.boxShadow = "none";
+                    text.innerHTML = '<span>Node Offline</span>';
                 }
             }
         });
 
-        connection.on("UserTyping", function (userId, isOnline) {
+        connection.on("UserTyping", function (userId, isTyping) {
             if (userId === "@Model.FriendUserId") {
                 const typingStatus = document.getElementById("typingStatus");
-                typingStatus.innerText = isOnline ? "@Model.FriendName đang nhập..." : "";
+                typingStatus.innerText = isTyping ? "@Model.FriendName đang truyền tin..." : "";
             }
         });
 
         connection.on("MessagesMarkedAsSeen", function (conversationId, userId) {
             if (userId === "@Model.FriendUserId") {
                 // The friend saw our messages
-                const statusElements = document.querySelectorAll(".message-status");
-                statusElements.forEach(el => {
-                    el.innerText = "Đã xem";
-                    el.classList.remove("text-muted");
-                    el.classList.add("text-success");
+                const statusIcons = document.querySelectorAll('[class^="message-status-icon-"]');
+                statusIcons.forEach(el => {
+                    el.style.color = "var(--emerald-glow)";
                 });
             }
         });
 
         connection.on("ReceiveMessage", function (senderId, message, sentAt, messageId) {
             const isMine = senderId === currentUserId;
-            appendMessage(senderId, message, sentAt, isMine, false);
+            appendMessage(senderId, message, sentAt, isMine, false, messageId);
             
-            // Remove "No messages" alert if it exists
-            const noMessages = document.querySelector(".no-messages");
-            if (noMessages) noMessages.remove();
+            const placeholder = document.getElementById("noMessagesPlaceholder");
+            if (placeholder) placeholder.remove();
             
-            // Scroll to bottom
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Mark as seen if we are focused
             if (document.hasFocus() && !isMine) {
                 connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
             }
@@ -147,19 +174,15 @@
 
         connection.start()
             .then(() => {
-                console.log("Connected to SignalR");
                 connection.invoke("JoinRoom", roomName);
-                // Mark messages as seen when entering the chat
                 connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
             })
             .catch(err => console.error(err.toString()));
 
-        // Typing logic
         let typingTimeout;
         messageInput.addEventListener("input", function () {
             clearTimeout(typingTimeout);
             connection.invoke("NotifyTyping", roomName, currentUserId, true);
-            
             typingTimeout = setTimeout(() => {
                 connection.invoke("NotifyTyping", roomName, currentUserId, false);
             }, 3000);
@@ -172,51 +195,40 @@
         async function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
-
             try {
-                // Clear typing indicator before sending
                 clearTimeout(typingTimeout);
                 await connection.invoke("NotifyTyping", roomName, currentUserId, false);
-
                 await connection.invoke("SendMessageToRoom", roomName, currentUserId, message, parseInt(conversationId));
                 messageInput.value = "";
                 messageInput.focus();
             } catch (err) {
                 console.error(err.toString());
-                alert("Lỗi khi gửi tin nhắn qua SignalR");
             }
         }
 
         sendBtn.addEventListener("click", sendMessage);
-        messageInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                sendMessage();
-            }
-        });
+        messageInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 
-        function appendMessage(senderId, content, sentAt, isMine, isSeen) {
+        function appendMessage(senderId, content, sentAt, isMine, isSeen, messageId) {
             const row = document.createElement("div");
             row.className = `message-row ${isMine ? "mine" : "other"}`;
+            row.style.display = "flex";
+            row.style.flexDirection = "column";
+            row.style.alignItems = isMine ? "flex-end" : "flex-start";
             
-            let senderHtml = "";
-            let statusHtml = "";
-            if (!isMine) {
-                senderHtml = `<div style="font-size:12px; opacity:0.8; margin-bottom:6px;">@Model.FriendName</div>`;
-            } else {
-                statusHtml = `<div class="message-status ${isSeen ? "text-success" : "text-muted"}" style="font-size: 10px; text-align: right; margin-top: 4px;">${isSeen ? "Đã xem" : "Đã gửi"}</div>`;
-            }
+            const timeStr = sentAt.split(' ')[1] || sentAt; // Try to extract time if format is DD/MM/YYYY HH:mm
 
             row.innerHTML = `
-                <div class="message-bubble">
-                    ${senderHtml}
-                    <div>${escapeHtml(content)}</div>
-                    <div style="font-size:11px; opacity:0.75; margin-top:8px;">
-                        ${sentAt}
-                    </div>
-                    ${statusHtml}
+                <div class="message-bubble" style="max-width: 75%; padding: 12px 18px; border-radius: 18px; font-size: 14px; line-height: 1.5; position: relative; ${isMine ? "background: linear-gradient(135deg, var(--emerald), var(--emerald-dark)); color: #fff; border-bottom-right-radius: 4px;" : "background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #fff; border-bottom-left-radius: 4px;"}">
+                    ${escapeHtml(content)}
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px; padding: 0 4px;">
+                    <span style="font-size: 10px; color: var(--text-muted);">${timeStr}</span>
+                    ${isMine ? `<span class="message-status-icon-${messageId}" style="color: ${isSeen ? "var(--emerald-glow)" : "var(--text-muted)"}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>` : ""}
                 </div>
             `;
             chatMessages.appendChild(row);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         function escapeHtml(text) {
@@ -225,7 +237,6 @@
             return div.innerHTML;
         }
 
-        // Initial scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
     </script>
 }

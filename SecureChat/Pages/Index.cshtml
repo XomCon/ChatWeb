@@ -1,131 +1,145 @@
-﻿@page
+@page
 @model SecureChat.Pages.IndexModel
 @{
     ViewData["Title"] = "Trang chủ";
 }
-
 @if (!Model.IsLoggedIn)
 {
-    <section class="saas-home">
-        <div class="saas-home__hero">
-            <div class="saas-home__eyebrow">SecureChat Platform</div>
-            <h1>Chat an toàn, quản lý gọn, sử dụng nhanh.</h1>
-            <p>
-                Một hệ thống nhắn tin hiện đại với kết bạn, chat riêng, chat nhóm,
-                phân quyền admin và kiểm soát bảo mật.
-            </p>
+    <section class="guest-hero" style="text-align: center; padding: 120px 24px 60px;">
+        <div class="badge-soft badge-emerald" style="margin-bottom: 24px; animation: fadeInUp 0.8s ease forwards;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Next-Gen Encryption Active
+        </div>
+        
+        <h1 style="font-size: clamp(48px, 8vw, 84px); margin-bottom: 24px; animation: fadeInUp 1s 0.2s ease forwards; opacity: 0;">
+            SecureChat <span style="background: linear-gradient(135deg, #4ade80, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Aurora</span>
+        </h1>
+        
+        <p style="font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto 48px; font-weight: 500; animation: fadeInUp 1s 0.4s ease forwards; opacity: 0;">
+            Hệ thống liên lạc phi tập trung, bảo mật tuyệt đối với giao diện Aurora Glass thế hệ mới. 
+            Kết nối bạn bè và đồng nghiệp trong môi trường mã hóa đầu cuối.
+        </p>
 
-            <div class="saas-home__actions">
-                <a asp-page="/Account/Register" class="btn btn-primary">Bắt đầu ngay</a>
-                <a asp-page="/Account/Login" class="btn btn-outline-light">Đăng nhập</a>
-            </div>
+        <div style="display: flex; gap: 16px; justify-content: center; animation: fadeInUp 1s 0.6s ease forwards; opacity: 0;">
+            <a asp-page="/Account/Register" class="btn btn-primary" style="padding: 16px 32px; font-size: 16px;">Khởi tạo Matrix</a>
+            <a asp-page="/Account/Login" class="btn btn-outline-light" style="padding: 16px 32px; font-size: 16px;">Truy cập Portal</a>
         </div>
 
-        <div class="saas-home__stats">
-            <div class="saas-metric">
-                <span class="saas-metric__label">Người dùng</span>
-                <strong class="saas-metric__value">@Model.TotalUsers</strong>
+        <div style="margin-top: 80px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; animation: fadeInUp 1.2s 0.8s ease forwards; opacity: 0;">
+            <div class="glass-card" style="padding: 32px; text-align: left;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3 style="font-size: 20px;">Mã hóa vĩnh cửu</h3>
+                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Dữ liệu được bảo vệ bởi thuật toán AES-256-GCM và RSA-4096, đảm bảo tính riêng tư tối thượng.</p>
             </div>
-            <div class="saas-metric">
-                <span class="saas-metric__label">Đang online</span>
-                <strong class="saas-metric__value">@Model.OnlineUsers</strong>
+
+            <div class="glass-card" style="padding: 32px; text-align: left;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(56, 189, 248, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <h3 style="font-size: 20px;">Mạng lưới Node</h3>
+                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Kết nối không giới hạn với bạn bè và các nhóm làm việc thông qua hạ tầng SignalR tốc độ cao.</p>
             </div>
-            <div class="saas-metric">
-                <span class="saas-metric__label">Nhóm chat</span>
-                <strong class="saas-metric__value">@Model.TotalGroups</strong>
+
+            <div class="glass-card" style="padding: 32px; text-align: left;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(168, 85, 247, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h3 style="font-size: 20px;">Hệ thống Admin</h3>
+                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Công cụ quản trị mạnh mẽ giúp kiểm soát toàn diện luồng thông tin và nhật ký hệ thống.</p>
             </div>
         </div>
     </section>
 
-    <section class="saas-grid">
-        <div class="saas-card">
-            <h3>Kết bạn</h3>
-            <p>Kết nối và quản lý danh sách bạn bè nhanh chóng.</p>
-        </div>
-        <div class="saas-card">
-            <h3>Chat riêng</h3>
-            <p>Nhắn tin trực tiếp với bạn bè trong hệ thống.</p>
-        </div>
-        <div class="saas-card">
-            <h3>Chat nhóm</h3>
-            <p>Tạo nhóm, thêm thành viên và quản lý vai trò.</p>
-        </div>
-        <div class="saas-card">
-            <h3>Admin</h3>
-            <p>Giám sát user, quyền truy cập và log hệ thống.</p>
-        </div>
-    </section>
+    <style>
+        @@keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 }
 else
 {
-    <section class="saas-dashboard">
-        <div class="saas-dashboard__top">
-            <div>
-                <div class="saas-home__eyebrow">Dashboard</div>
-                <h1>@Model.FullName</h1>
-                <p>@Model.Email · @Model.Role</p>
+    <section class="user-dashboard" style="animation: fadeInUp 0.8s ease forwards;">
+        <div class="glass-card" style="padding: 40px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;">
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div style="width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, var(--emerald-dark), var(--emerald)); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);">
+                    @(string.IsNullOrWhiteSpace(Model.FullName) ? "U" : Model.FullName.Substring(0, 1).ToUpper())
+                </div>
+                <div>
+                    <h1 style="font-size: 32px; margin: 0;">Chào mừng, <span style="color: var(--emerald-glow)">@Model.FullName</span></h1>
+                    <p style="color: var(--text-secondary); margin: 4px 0 0;">@Model.Email · <span class="badge-soft badge-emerald" style="font-size: 10px; vertical-align: middle;">@Model.Role</span></p>
+                </div>
             </div>
-
-            <div class="saas-dashboard__actions">
-                <a asp-page="/Chat/Recent" class="btn btn-primary">Mở chat</a>
-                <a asp-page="/Account/Profile" class="btn btn-outline-light">Hồ sơ</a>
-                <a asp-page="/Account/Logout" class="btn btn-danger">Đăng xuất</a>
-            </div>
-        </div>
-
-        <div class="saas-dashboard__metrics">
-            <div class="saas-metric">
-                <span class="saas-metric__label">Bạn bè</span>
-                <strong class="saas-metric__value">@Model.FriendCount</strong>
-            </div>
-            <div class="saas-metric">
-                <span class="saas-metric__label">Lời mời</span>
-                <strong class="saas-metric__value">@Model.PendingCount</strong>
-            </div>
-            <div class="saas-metric">
-                <span class="saas-metric__label">Nhóm</span>
-                <strong class="saas-metric__value">@Model.GroupCount</strong>
+            <div style="display: flex; gap: 12px;">
+                <a asp-page="/Chat/Recent" class="btn btn-primary">Mở Matrix Chat</a>
+                <a asp-page="/Account/Profile" class="btn btn-outline-light">Hồ sơ bảo mật</a>
             </div>
         </div>
 
-        <div class="saas-dashboard__grid">
-            <a asp-page="/Friends/Index" class="saas-link-card">
-                <h3>Bạn bè</h3>
-                <p>Danh sách và trạng thái bạn bè.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px;">
+            <div class="glass-card" style="padding: 24px; border-left: 4px solid var(--emerald);">
+                <div style="color: var(--text-muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Bạn bè</div>
+                <div style="font-size: 36px; font-weight: 900; color: #fff;">@Model.FriendCount</div>
+            </div>
+            <div class="glass-card" style="padding: 24px; border-left: 4px solid #38bdf8;">
+                <div style="color: var(--text-muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Lời mời chờ</div>
+                <div style="font-size: 36px; font-weight: 900; color: #fff;">@Model.PendingCount</div>
+            </div>
+            <div class="glass-card" style="padding: 24px; border-left: 4px solid #a855f7;">
+                <div style="color: var(--text-muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Nhóm chat</div>
+                <div style="font-size: 36px; font-weight: 900; color: #fff;">@Model.GroupCount</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+            <a asp-page="/Friends/Index" class="glass-card" style="padding: 32px; display: block; transition: var(--transition-bounce);">
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 16px;">
+                    <div style="color: var(--emerald);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <h3 style="margin: 0;">Danh bạ</h3>
+                </div>
+                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Quản lý danh sách kết nối và trạng thái của các Node bạn bè.</p>
             </a>
 
-            <a asp-page="/Friends/Requests" class="saas-link-card">
-                <h3>Lời mời kết bạn</h3>
-                <p>Xử lý lời mời đang chờ.</p>
+            <a asp-page="/Chat/Recent" class="glass-card" style="padding: 32px; display: block; transition: var(--transition-bounce);">
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 16px;">
+                    <div style="color: #38bdf8;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                    <h3 style="margin: 0;">Communications</h3>
+                </div>
+                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Truy cập hầm tin nhắn bảo mật và các cuộc trò chuyện gần đây.</p>
             </a>
 
-            <a asp-page="/Chat/Recent" class="saas-link-card">
-                <h3>Cuộc trò chuyện</h3>
-                <p>Mở các chat gần đây.</p>
-            </a>
-
-            <a asp-page="/Groups/Index" class="saas-link-card">
-                <h3>Nhóm chat</h3>
-                <p>Quản lý nhóm đang tham gia.</p>
-            </a>
-
-            <a asp-page="/Account/ChangePassword" class="saas-link-card">
-                <h3>Đổi mật khẩu</h3>
-                <p>Cập nhật bảo mật tài khoản.</p>
+            <a asp-page="/Groups/Index" class="glass-card" style="padding: 32px; display: block; transition: var(--transition-bounce);">
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 16px;">
+                    <div style="color: #fbbf24;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div>
+                    <h3 style="margin: 0;">Secure Groups</h3>
+                </div>
+                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Tham gia và điều phối các nhóm chat mã hóa đa người dùng.</p>
             </a>
 
             @if (Model.IsAdmin)
             {
-                <a asp-page="/Admin/Index" class="saas-link-card saas-link-card--admin">
-                    <h3>Quản trị hệ thống</h3>
-                    <p>Quản lý người dùng và quyền hạn.</p>
-                </a>
-
-                <a asp-page="/Admin/Logs" class="saas-link-card saas-link-card--admin">
-                    <h3>Nhật ký hệ thống</h3>
-                    <p>Theo dõi hoạt động toàn hệ thống.</p>
+                <a asp-page="/Admin/Index" class="glass-card" style="padding: 32px; display: block; border: 1px solid rgba(239, 68, 68, 0.2); transition: var(--transition-bounce);">
+                    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 16px;">
+                        <div style="color: #ef4444;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                        <h3 style="margin: 0;">Admin Console</h3>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Giám sát hệ thống, quản lý người dùng và kiểm soát bảo mật.</p>
                 </a>
             }
         </div>
     </section>
+
+    <style>
+        .glass-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        @@keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 }

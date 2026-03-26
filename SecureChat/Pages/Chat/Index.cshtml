@@ -1,57 +1,86 @@
 @page
 @model SecureChat.Pages.Chat.IndexModel
 @{
-    ViewData["Title"] = "Chat riêng";
+    ViewData["Title"] = "Secure Communications";
 }
 
-<div class="page-box-wide">
-    <h2>Chat riêng</h2>
-    <p class="text-muted">Chọn một người bạn để bắt đầu trò chuyện.</p>
+<div class="page-box-wide" style="animation: fadeInUp 0.8s ease forwards;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <div>
+            <h2 style="font-size: 28px; margin: 0;">Khởi tạo liên lạc</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Chọn một Node bạn bè trong mạng lưới để thiết lập đường truyền mã hóa.</p>
+        </div>
+        <div class="badge-soft badge-info">
+             <div class="status-dot status-dot--online" style="margin-right: 6px;"></div>
+             SignalR Node Active
+        </div>
+    </div>
 
     @if (Model.Friends.Any())
     {
-        <div class="table-wrap">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var friend in Model.Friends)
-                    {
-                        <tr>
-                            <td>@friend.FullName</td>
-                            <td>@friend.Email</td>
-                            <td id="status-@friend.UserId">
-                                @if (friend.IsOnline)
-                                {
-                                    <span class="badge-soft badge-success">Online</span>
-                                }
-                                else
-                                {
-                                    <span class="badge-soft badge-danger">Offline</span>
-                                }
-                            </td>
-                            <td>
-                                <a asp-page="/Chat/Private" asp-route-friendUserId="@friend.UserId" class="btn btn-primary">
-                                    Mở chat
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+            @foreach (var friend in Model.Friends)
+            {
+                <div class="glass-card" style="padding: 24px; transition: var(--transition-bounce);">
+                    <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #fff;">
+                            @(string.IsNullOrWhiteSpace(friend.FullName) ? "U" : friend.FullName.Substring(0, 1).ToUpper())
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 15px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@friend.FullName</h4>
+                            <p style="color: var(--text-muted); font-size: 12px; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@friend.Email</p>
+                        </div>
+                    </div>
+
+                    <div id="status-container-@friend.UserId" style="margin-bottom: 20px;">
+                        @if (friend.IsOnline)
+                        {
+                            <div class="badge-soft badge-emerald" style="width: 100%; justify-content: center;">
+                                <div class="status-dot status-dot--online"></div>
+                                Node Online · Encrypted Access
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="badge-soft badge-danger" style="width: 100%; justify-content: center; opacity: 0.6;">
+                                <div class="status-dot status-dot--offline"></div>
+                                Node Offline · Standby Mode
+                            </div>
+                        }
+                    </div>
+
+                    <a asp-page="/Chat/Private" asp-route-friendUserId="@friend.UserId" class="btn btn-primary w-100" style="padding: 12px; font-size: 13px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Mở cổng liên lạc
+                    </a>
+                </div>
+            }
         </div>
     }
     else
     {
-        <div class="alert alert-info">Bạn chưa có bạn bè nào để chat riêng.</div>
+        <div class="glass-card" style="padding: 60px; text-align: center;">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: var(--text-muted);">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3 style="font-size: 20px; color: #fff;">Chưa có Node sẵn sàng</h3>
+            <p style="color: var(--text-muted); max-width: 400px; margin: 8px auto 24px;">Bạn cần kết nối với ít nhất một người bạn để bắt đầu trò chuyện bảo mật.</p>
+            <a asp-page="/Friends/FindUsers" class="btn btn-primary">Tìm kiếm bạn bè</a>
+        </div>
     }
 </div>
+
+<style>
+    .glass-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(16, 185, 129, 0.2);
+    }
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
@@ -62,12 +91,22 @@
             .build();
 
         connection.on("UserStatusChanged", function (userId, isOnline) {
-            const statusCell = document.getElementById(`status-${userId}`);
-            if (statusCell) {
+            const container = document.getElementById(`status-container-${userId}`);
+            if (container) {
                 if (isOnline) {
-                    statusCell.innerHTML = '<span class="badge-soft badge-success">Online</span>';
+                    container.innerHTML = `
+                        <div class="badge-soft badge-emerald" style="width: 100%; justify-content: center;">
+                            <div class="status-dot status-dot--online"></div>
+                            Node Online · Encrypted Access
+                        </div>
+                    `;
                 } else {
-                    statusCell.innerHTML = '<span class="badge-soft badge-danger">Offline</span>';
+                    container.innerHTML = `
+                        <div class="badge-soft badge-danger" style="width: 100%; justify-content: center; opacity: 0.6;">
+                            <div class="status-dot status-dot--offline"></div>
+                            Node Offline · Standby Mode
+                        </div>
+                    `;
                 }
             }
         });

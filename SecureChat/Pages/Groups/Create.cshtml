@@ -1,54 +1,124 @@
-﻿@page
+@page
 @model SecureChat.Pages.Groups.CreateModel
 @{
-    ViewData["Title"] = "Tạo nhóm chat";
+    ViewData["Title"] = "Phát động Cluster";
 }
 
-<div class="page-box">
-    <h2>Tạo nhóm chat</h2>
-    <p class="text-muted">Chọn bạn bè để thêm vào nhóm.</p>
+<div class="page-box" style="animation: fadeInUp 0.8s ease forwards; max-width: 700px; margin: 0 auto;">
+    <div style="margin-bottom: 32px; text-align: center;">
+        <div class="badge-soft badge-warning" style="margin-bottom: 16px;">Cluster Provisioning Protocol</div>
+        <h2 style="font-size: 32px; margin: 0;">Khởi tạo Nhóm chat</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">Thiết lập một không gian cộng tác mới và mời các Node thành viên gia nhập.</p>
+    </div>
 
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
-        <div class="alert alert-danger">@Model.ErrorMessage</div>
+        <div class="alert alert-danger" style="border-radius: 12px; margin-bottom: 32px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @Model.ErrorMessage
+        </div>
     }
 
-    <form method="post">
-        <div class="mb-4">
-            <label asp-for="Input.GroupName" class="form-label"></label>
-            <input asp-for="Input.GroupName" class="form-control" placeholder="Nhập tên nhóm" />
-            <span asp-validation-for="Input.GroupName" class="text-danger"></span>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label">Chọn thành viên</label>
-
-            @if (Model.Friends.Any())
-            {
-                <div class="info-grid">
-                    @foreach (var friend in Model.Friends)
-                    {
-                        <label class="info-card" style="cursor:pointer;">
-                            <input type="checkbox" name="Input.SelectedFriendIds" value="@friend.UserId" style="margin-right:10px;" />
-                            <strong>@friend.FullName</strong>
-                            <div class="text-muted">@friend.Email</div>
-                        </label>
-                    }
+    <div class="glass-card" style="padding: 40px;">
+        <form method="post">
+            <div class="form-group" style="margin-bottom: 32px;">
+                <label asp-for="Input.GroupName" class="form-label">Tên nhóm / Cluster Alias</label>
+                <div style="position: relative;">
+                    <span style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+                    </span>
+                    <input asp-for="Input.GroupName" class="form-control" style="padding-left: 48px;" placeholder="Ví dụ: Dự án Aurora, Phòng SEC,..." />
                 </div>
-            }
-            else
-            {
-                <div class="alert alert-info">Bạn chưa có bạn bè nào để thêm vào nhóm.</div>
-            }
-        </div>
+                <span asp-validation-for="Input.GroupName" class="text-danger"></span>
+            </div>
 
-        <div class="d-flex gap-3">
-            <button type="submit" class="btn btn-primary">Tạo nhóm</button>
-            <a asp-page="/Groups/Index" class="btn btn-outline-light">Quay lại</a>
-        </div>
-    </form>
+            <div class="form-group">
+                <label class="form-label">Mời các Node thành viên</label>
+                
+                @if (Model.Friends.Any())
+                {
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 12px; max-height: 300px; overflow-y: auto; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03);">
+                        @foreach (var friend in Model.Friends)
+                        {
+                            <label class="member-select-card" style="display: flex; align-items: center; gap: 16px; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); cursor: pointer; transition: all 0.3s ease;">
+                                <input type="checkbox" name="Input.SelectedFriendIds" value="@friend.UserId" class="custom-checkbox" />
+                                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #fff;">
+                                    @(string.IsNullOrWhiteSpace(friend.FullName) ? "U" : friend.FullName.Substring(0, 1).ToUpper())
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 700; color: #fff;">@friend.FullName</div>
+                                    <div style="font-size: 11px; color: var(--text-muted);">@friend.Email</div>
+                                </div>
+                                <div class="select-indicator" style="width: 20px; height: 20px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;">
+                                     <svg class="check-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+                                </div>
+                            </label>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="glass-card" style="padding: 24px; text-align: center; border-style: dashed; background: transparent;">
+                        <p style="color: var(--text-muted); margin: 0; font-size: 13px;">Bạn chưa có bạn bè để mời vào nhóm.</p>
+                        <a asp-page="/Friends/FindUsers" style="font-size: 12px; color: var(--emerald-glow); font-weight: 700; margin-top: 8px; display: inline-block;">Tìm kiếm bạn bè ngay</a>
+                    </div>
+                }
+            </div>
+
+            <div style="display: flex; gap: 16px; margin-top: 40px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; padding: 16px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.1em;">
+                    Khởi động Cluster
+                </button>
+                <a asp-page="/Groups/Index" class="btn btn-outline-light" style="padding: 16px 24px;">Hủy</a>
+            </div>
+        </form>
+    </div>
 </div>
+
+<style>
+    .member-select-card:hover {
+        background: rgba(255,255,255,0.05) !important;
+        border-color: rgba(16, 185, 129, 0.2) !important;
+    }
+    
+    .custom-checkbox {
+        display: none;
+    }
+    
+    .custom-checkbox:checked + .select-indicator {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--emerald) !important;
+    }
+    
+    .custom-checkbox:checked + .select-indicator .check-icon {
+        display: block !important;
+    }
+
+    .member-select-card input[type="checkbox"]:checked ~ .select-indicator {
+         background: rgba(16, 185, 129, 0.1);
+         border-color: var(--emerald) !important;
+    }
+    .member-select-card input[type="checkbox"]:checked ~ .select-indicator .check-icon {
+         display: block !important;
+    }
+    
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Custom checkbox logic for styling
+        document.querySelectorAll('.member-select-card').forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            card.addEventListener('click', (e) => {
+                if(e.target !== checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                }
+            });
+        });
+    </script>
 }

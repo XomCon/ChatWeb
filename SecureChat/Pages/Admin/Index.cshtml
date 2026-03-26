@@ -1,50 +1,97 @@
-﻿@page
+@page
 @model SecureChat.Pages.Admin.IndexModel
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "SOC Dashboard";
 }
 
 <div class="admin-layout">
     <partial name="_AdminSidebar" />
 
-    <div class="admin-main">
-        <div class="admin-simple">
+    <div class="admin-main" style="animation: fadeInUp 0.8s ease forwards;">
+        <div class="admin-header">
+            <div>
+                <h1>Global Dashboard Overview</h1>
+                <p>Quản trị hệ thống và giám sát tài nguyên Cluster mạng lưới.</p>
+            </div>
+            <div class="badge-soft badge-emerald">
+                <div class="status-dot status-dot--online" style="margin-right:8px"></div>
+                System Active & Encrypted
+            </div>
+        </div>
 
-            <div class="admin-header">
-                <div>
-                    <h1>Admin Dashboard</h1>
-                    <p>Quản lý hệ thống SecureChat</p>
+        <div class="admin-stats">
+            <div class="stat-box">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <span>Tổng Identity Nodes</span>
+                    <div style="color: var(--emerald); opacity: 0.5;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    </div>
                 </div>
+                <h2>@Model.TotalUsers</h2>
             </div>
 
-            <div class="admin-stats">
-                <div class="stat-box">
-                    <span>Tổng user</span>
-                    <h2>@Model.TotalUsers</h2>
+            <div class="stat-box">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <span>Nodes Trực tuyến</span>
+                    <div style="color: var(--emerald); opacity: 0.5;">
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 10 10"/></svg>
+                    </div>
                 </div>
-
-                <div class="stat-box">
-                    <span>Online</span>
-                    <h2>@Model.OnlineUsers</h2>
-                </div>
-
-                <div class="stat-box">
-                    <span>Admin</span>
-                    <h2>@Model.TotalAdmins</h2>
-                </div>
-
-                <div class="stat-box">
-                    <span>Đang hoạt động</span>
-                    <h2>@Model.ActiveUsers</h2>
-                </div>
+                <h2 style="color: var(--emerald-glow);">@Model.OnlineUsers</h2>
             </div>
 
+            <div class="stat-box">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <span>Điều phối viên (Admin)</span>
+                    <div style="color: #fbbf24; opacity: 0.5;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                </div>
+                <h2>@Model.TotalAdmins</h2>
+            </div>
+
+            <div class="stat-box">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <span>Hoạt động 24h</span>
+                    <div style="color: #38bdf8; opacity: 0.5;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                </div>
+                <h2>@Model.ActiveUsers</h2>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 20px;">Phân vùng Điều khiển</h3>
             <div class="admin-actions-grid">
-                <a asp-page="/Admin/Users" class="action-card">👤 Quản lý User</a>
-                <a asp-page="/Admin/Groups" class="action-card">👥 Quản lý nhóm</a>
-                <a asp-page="/Admin/Logs" class="action-card">📜 Nhật ký hệ thống</a>
-                <a asp-page="/Chat/Recent" class="action-card">💬 Xem chat</a>
+                <a asp-page="/Admin/Users" class="action-card">
+                    <div style="font-size: 32px; margin-bottom: 8px;">👤</div>
+                    <span>Quản lý Identity Nodes</span>
+                    <p style="font-size: 11px; margin: 0; opacity: 0.5; font-weight: normal;">Cấu hình, phân quyền và giám sát người dùng.</p>
+                </a>
+                <a asp-page="/Admin/Groups" class="action-card" style="border-color: rgba(251, 191, 36, 0.1);">
+                    <div style="font-size: 32px; margin-bottom: 8px;">👥</div>
+                    <span>Quản lý Hub Clusters</span>
+                    <p style="font-size: 11px; margin: 0; opacity: 0.5; font-weight: normal;">Điều phối các nhóm và phòng chat cộng tác.</p>
+                </a>
+                <a asp-page="/Admin/Logs" class="action-card" style="border-color: rgba(56, 189, 248, 0.1);">
+                    <div style="font-size: 32px; margin-bottom: 8px;">📜</div>
+                    <span>Audit Trail & Forensic</span>
+                    <p style="font-size: 11px; margin: 0; opacity: 0.5; font-weight: normal;">Nhật ký hệ thống và phân tích dữ liệu bảo mật.</p>
+                </a>
+                <a asp-page="/Chat/Index" class="action-card" style="border-color: rgba(16, 185, 129, 0.1);">
+                    <div style="font-size: 32px; margin-bottom: 8px;">💬</div>
+                    <span>Hub Comms Monitoring</span>
+                    <p style="font-size: 11px; margin: 0; opacity: 0.5; font-weight: normal;">Giám sát các cuộc hội thoại trực tiếp.</p>
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

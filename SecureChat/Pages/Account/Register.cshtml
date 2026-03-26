@@ -1,108 +1,139 @@
-﻿@page
+@page
 @model SecureChat.Pages.Account.RegisterModel
 @{
-    ViewData["Title"] = "Đăng ký tài khoản";
+    ViewData["Title"] = "Khởi tạo tài khoản";
 }
 
-<div class="auth-shell">
-    <div class="auth-panel auth-panel--form">
-        <div class="auth-panel__top">
-            <div class="auth-chip auth-chip--success">SecureChat Register</div>
-            <h1 class="auth-panel__title">Tạo tài khoản mới</h1>
-            <p class="auth-panel__subtitle">
-                Nhập thông tin của bạn. Hệ thống sẽ gửi mã OTP về Gmail để xác thực đăng ký.
-            </p>
+<div style="min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 24px;">
+    <div class="glass-card" style="width: 100%; maxWidth: 1000px; display: grid; grid-template-columns: 1.2fr 1fr; border-radius: 40px; overflow: hidden; animation: fadeInUp 0.8s ease forwards;">
+        
+        <!-- ── Left: Form Panel ── -->
+        <div style="padding: 50px; background: rgba(10, 12, 16, 0.4);">
+            <div style="margin-bottom: 32px;">
+                <div class="badge-soft badge-emerald" style="margin-bottom: 16px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    Identity Provisioning
+                </div>
+                <h1 style="font-size: 28px; margin-bottom: 8px;">Tạo tài khoản mới</h1>
+                <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6;">
+                    Thiết lập danh tính số của bạn trên SecureChat. Hệ thống sẽ gửi mã OTP xác thực tới Gmail để hoàn tất quá trình khởi tạo.
+                </p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger" style="font-size: 13px; border-radius: 12px; margin-bottom: 24px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <form method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label asp-for="Input.FullName" class="form-label">Họ và tên</label>
+                        <input asp-for="Input.FullName" class="form-control" placeholder="John Doe" />
+                        <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label asp-for="Input.PhoneNumber" class="form-label">Phone Number</label>
+                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="+84 ..." />
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Input.Email" class="form-label">Gmail Address</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 16px; top: 16px; color: var(--text-muted);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </span>
+                        <input asp-for="Input.Email" class="form-control" style="padding-left: 48px;" placeholder="name@gmail.com" />
+                    </div>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label asp-for="Input.Password" class="form-label">Password</label>
+                        <input asp-for="Input.Password" type="password" class="form-control" placeholder="••••••••" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label asp-for="Input.ConfirmPassword" class="form-label">Confirm</label>
+                        <input asp-for="Input.ConfirmPassword" type="password" class="form-control" placeholder="••••••••" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" style="padding: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 24px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                    Gửi OTP đăng ký
+                </button>
+            </form>
+
+            <div style="text-align: center; font-size: 14px; color: var(--text-secondary);">
+                Đã có tài khoản? <a asp-page="/Account/Login" style="font-weight: 800; color: var(--emerald-glow);">Đăng nhập ngay</a>
+            </div>
         </div>
 
-        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
-            <div class="alert alert-danger">@Model.ErrorMessage</div>
-        }
+        <!-- ── Right: Showcase Panel ── -->
+        <div style="padding: 50px 40px; background: radial-gradient(circle at center, rgba(16, 185, 129, 0.12) 0%, rgba(10, 12, 16, 0.95) 100%); display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--glass-border); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: var(--emerald); filter: blur(120px); opacity: 0.1;"></div>
+            
+            <div style="position: relative; z-index: 1;">
+                <h2 style="font-size: 24px; margin-bottom: 40px; line-height: 1.3;">Xác thực danh tính<br/><span style="color: var(--emerald-glow);">Bảo mật từ bước đầu tiên</span></h2>
+                
+                <div style="display: flex; flex-direction: column; gap: 28px;">
+                    <div style="display: flex; gap: 16px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-accent); border: 1px solid var(--glass-border-bright); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: var(--emerald-glow); flex-shrink: 0; margin-top: 4px;">01</div>
+                        <div>
+                            <h4 style="font-size: 15px; margin-bottom: 4px;">Cung cấp Thông tin</h4>
+                            <p style="color: var(--text-muted); font-size: 12px; margin: 0;">Khởi tạo Profile với các thông tin cơ bản để thiết lập Node liên lạc cá nhân.</p>
+                        </div>
+                    </div>
 
-        <form method="post" class="auth-form">
-            <div class="auth-form__grid">
-                <div class="mb-3">
-                    <label asp-for="Input.FullName" class="form-label">Họ và tên</label>
-                    <input asp-for="Input.FullName" class="form-control" placeholder="Nhập họ và tên" />
-                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                    <div style="display: flex; gap: 16px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-accent); border: 1px solid var(--glass-border-bright); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: var(--emerald-glow); flex-shrink: 0; margin-top: 4px;">02</div>
+                        <div>
+                            <h4 style="font-size: 15px; margin-bottom: 4px;">Xác thực Gmail OTP</h4>
+                            <p style="color: var(--text-muted); font-size: 12px; margin: 0;">Mã OTP duy nhất được gửi tới Gmail của bạn để đảm bảo quyền sở hữu tài khoản.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 16px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-accent); border: 1px solid var(--glass-border-bright); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: var(--emerald-glow); flex-shrink: 0; margin-top: 4px;">03</div>
+                        <div>
+                            <h4 style="font-size: 15px; margin-bottom: 4px;">Gia nhập Matrix</h4>
+                            <p style="color: var(--text-muted); font-size: 12px; margin: 0;">Sau khi xác thực thành công, tài khoản của bạn sẽ được kích hoạt trên hệ thống Aurora.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Input.PhoneNumber" class="form-label">Số điện thoại</label>
-                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
-                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Input.Email" class="form-label">Gmail</label>
-                <input asp-for="Input.Email" class="form-control" placeholder="Nhập Gmail để nhận OTP" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-
-            <div class="auth-form__grid">
-                <div class="mb-3">
-                    <label asp-for="Input.Password" class="form-label">Mật khẩu</label>
-                    <input asp-for="Input.Password" class="form-control" placeholder="Nhập mật khẩu" />
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Input.ConfirmPassword" class="form-label">Xác nhận mật khẩu</label>
-                    <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" />
-                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="auth-note">
-                Sau khi nhấn <strong>Gửi OTP đăng ký</strong>, hệ thống sẽ gửi mã OTP tới Gmail của bạn.
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 auth-submit-btn">
-                Gửi OTP đăng ký
-            </button>
-        </form>
-
-        <div class="auth-footer-link">
-            Đã có tài khoản?
-            <a asp-page="/Account/Login">Đăng nhập ngay</a>
-        </div>
-    </div>
-
-    <div class="auth-panel auth-panel--showcase">
-        <div class="auth-showcase__badge">Bảo mật đăng ký</div>
-        <h2 class="auth-showcase__title">Xác thực Gmail bằng OTP</h2>
-        <p class="auth-showcase__text">
-            Tài khoản chỉ được tạo thành công khi người dùng nhập đúng mã OTP được gửi tới Gmail.
-        </p>
-
-        <div class="auth-showcase__steps">
-            <div class="auth-step-card">
-                <span class="auth-step-card__number">01</span>
-                <div>
-                    <h3>Nhập thông tin</h3>
-                    <p>Họ tên, Gmail, số điện thoại và mật khẩu.</p>
-                </div>
-            </div>
-
-            <div class="auth-step-card">
-                <span class="auth-step-card__number">02</span>
-                <div>
-                    <h3>Nhận OTP Gmail</h3>
-                    <p>Hệ thống gửi mã OTP xác thực về đúng email đã đăng ký.</p>
-                </div>
-            </div>
-
-            <div class="auth-step-card">
-                <span class="auth-step-card__number">03</span>
-                <div>
-                    <h3>Hoàn tất đăng ký</h3>
-                    <p>Chỉ tạo tài khoản khi OTP hợp lệ và chưa hết hạn.</p>
+                <div style="margin-top: 60px; padding: 20px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);">
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Security Note</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 12px; margin: 0; line-height: 1.5;">
+                        Mọi dữ liệu cá nhận đều được mã hóa và không bao giờ được chia sẻ với bên thứ ba. Chúng tôi đề cao tính riêng tư lên hàng đầu.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @@media (max-width: 900px) {
+        .glass-card { grid-template-columns: 1fr !important; border-radius: 24px !important; }
+        div[style*="background: radial-gradient"] { display: none !important; }
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

@@ -1,101 +1,107 @@
-﻿@page
-@model SecureChat.Pages.Admin.UsersModel
+@page
+@model SecureChat.Pages.Admin.EditUserModel
 @{
-    ViewData["Title"] = "Quản lý User";
+    ViewData["Title"] = "Identity Node Configuration";
 }
 
 <div class="admin-layout">
     <partial name="_AdminSidebar" />
 
-    <div class="admin-main">
-        <div class="admin-shell">
-            <section class="admin-hero">
-                <div class="admin-hero__left">
-                    <div class="admin-chip">User Management</div>
-                    <h1>Quản lý người dùng</h1>
-                    <p>Xem, tìm kiếm và chỉnh sửa tài khoản trong hệ thống.</p>
-                </div>
-            </section>
+    <div class="admin-main" style="animation: fadeInUp 0.8s ease forwards;">
+        <!-- Hero Header -->
+        <div class="admin-header">
+            <div>
+                <div class="badge-soft badge-info" style="margin-bottom: 12px;">IAM Protocol: 082</div>
+                <h1>Identity Configuration</h1>
+                <p>Hiệu chỉnh định danh và phân quyền cho Node: <span style="color: var(--emerald-glow); font-weight: 700;">@Model.Input.FullName</span></p>
+            </div>
+            
+            <a asp-page="/Admin/Users" class="btn btn-outline-light">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><path d="m15 18-6-6 6-6"/></svg>
+                Hủy và Quay lại
+            </a>
+        </div>
 
-            <section class="admin-toolbar">
-                <div class="admin-toolbar__left">
-                    <form method="get" class="d-flex gap-2">
-                        <input asp-for="Keyword" class="form-control admin-search" placeholder="Tìm theo tên, email, số điện thoại..." />
-                        <select asp-for="RoleFilter" class="form-select" style="max-width:180px;">
-                            <option value="">Tất cả quyền</option>
-                            <option value="Admin">Admin</option>
-                            <option value="User">User</option>
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="glass-card" style="padding: 16px 24px; border-left: 4px solid #ef4444; margin-bottom: 24px; background: rgba(239, 68, 68, 0.05);">
+                <div style="color: #fca5a5; font-weight: 700; font-size: 14px;">PROTOCOL ERROR</div>
+                <div style="color: var(--text-secondary); font-size: 13px;">@Model.ErrorMessage</div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="glass-card" style="padding: 16px 24px; border-left: 4px solid var(--emerald); margin-bottom: 24px; background: rgba(16, 185, 129, 0.05);">
+                <div style="color: var(--emerald-glow); font-weight: 700; font-size: 14px;">CONFIGURATION SYNCED</div>
+                <div style="color: var(--text-secondary); font-size: 13px;">@Model.SuccessMessage</div>
+            </div>
+        }
+
+        <div class="glass-card" style="max-width: 800px; padding: 40px; border-radius: 32px;">
+            <form method="post">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 40px;">
+                    <!-- Basic Identifiers -->
+                    <div style="grid-column: span 2;">
+                        <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+                            <span style="width: 20px; height: 1px; background: var(--glass-border);"></span>
+                            Basic Identifiers
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Full Alias (Họ tên)</label>
+                            <input asp-for="Input.FullName" class="form-control" placeholder="Nhập tên định danh..." />
+                            <span asp-validation-for="Input.FullName" class="text-danger" style="font-size: 11px;"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Secure Email</label>
+                        <input asp-for="Input.Email" class="form-control" placeholder="user@securechat.io" />
+                        <span asp-validation-for="Input.Email" class="text-danger" style="font-size: 11px;"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Contact Payload (SĐT)</label>
+                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="+84..." />
+                    </div>
+
+                    <!-- Authorization Metadata -->
+                    <div style="grid-column: span 2; margin-top: 16px;">
+                        <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+                            <span style="width: 20px; height: 1px; background: var(--glass-border);"></span>
+                            Authorization Metadata
+                        </h4>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Access Level (Quyền)</label>
+                        <select asp-for="Input.Role" class="form-control" style="background: rgba(0,0,0,0.3);">
+                            <option value="User">Operative (User)</option>
+                            <option value="Admin">Coordinator (Admin)</option>
                         </select>
-                        <button type="submit" class="btn btn-primary">Lọc</button>
-                    </form>
-                </div>
-            </section>
+                    </div>
 
-            <section class="admin-table-panel">
-                <div class="admin-table-panel__head">
-                    <div>
-                        <h2 class="admin-table-panel__title">Danh sách tài khoản</h2>
-                        <p class="admin-table-panel__desc">Tổng: @Model.Users.Count tài khoản</p>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 16px; padding-top: 32px;">
+                        <div class="custom-checkbox-wrap" style="position: relative; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" asp-for="Input.IsActive" id="isActiveCheck" style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--emerald);" />
+                            <label for="isActiveCheck" style="font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;">Node Hoạt động (Active)</label>
+                        </div>
                     </div>
                 </div>
 
-                <div class="admin-table-wrap">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Họ tên</th>
-                                <th>Email</th>
-                                <th>SĐT</th>
-                                <th>Quyền</th>
-                                <th>Trạng thái</th>
-                                <th>Online</th>
-                                <th>Login sai</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var u in Model.Users)
-                            {
-                                <tr>
-                                    <td>@u.FullName</td>
-                                    <td>@u.Email</td>
-                                    <td>@u.PhoneNumber</td>
-                                    <td>
-                                        @if (u.Role == "Admin")
-                                        {
-                                            <span class="admin-badge admin-badge--warning">Admin</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="admin-badge admin-badge--info">User</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (u.IsActive)
-                                        {
-                                            <span class="admin-badge admin-badge--success">Hoạt động</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="admin-badge admin-badge--danger">Đã khóa</span>
-                                        }
-                                    </td>
-                                    <td>@(u.IsOnline ? "🟢" : "⚫")</td>
-                                    <td>@u.FailedLoginCount</td>
-                                    <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
-                                    <td>
-                                        <div class="admin-row-actions">
-                                            <a asp-page="/Admin/EditUser" asp-route-id="@u.Id" class="btn btn-secondary admin-btn-sm">Sửa</a>
-                                            <a asp-page="/Admin/DeleteUser" asp-route-id="@u.Id" class="btn btn-danger admin-btn-sm">Xóa</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div style="display: flex; gap: 16px; border-top: 1px solid var(--glass-border); padding-top: 32px;">
+                    <button type="submit" class="btn btn-primary" style="padding: 14px 40px;">Ghi đè Cấu hình</button>
+                    <a asp-page="/Admin/Users" class="btn btn-outline-light">Thoát</a>
                 </div>
-            </section>
+            </form>
         </div>
     </div>
 </div>
+
+<style>
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
