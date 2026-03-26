@@ -53,6 +53,8 @@ namespace SecureChat.Pages.Account
                 return RedirectToPage("/Account/Login");
             }
 
+            CurrentUserId = userId; // Giữ lại gán ID để tránh lỗi Substring
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)

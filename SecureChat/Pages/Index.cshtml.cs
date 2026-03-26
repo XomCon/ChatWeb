@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SecureChat.Data;
+using SecureChat.Models;
 
 namespace SecureChat.Pages
 {
@@ -43,7 +44,7 @@ namespace SecureChat.Pages
                 return;
             }
 
-            FullName = HttpContext.Session.GetString("FullName") ?? "Ng??i d�ng";
+            FullName = HttpContext.Session.GetString("FullName") ?? "Người dùng";
             Email = HttpContext.Session.GetString("Email") ?? "";
             Role = HttpContext.Session.GetString("Role") ?? "User";
             IsAdmin = Role == "Admin";
