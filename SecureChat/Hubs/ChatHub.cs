@@ -60,16 +60,41 @@ namespace SecureChat.Hubs
 
         public async Task JoinRoom(string roomName)
         {
+            var httpContext = Context.GetHttpContext();
+            var userId = httpContext?.Session.GetString("UserId");
+
+            if (string.IsNullOrEmpty(userId)) return;
+
+            // Extract conversationId from roomName (format: Conversation_{id})
+            if (roomName.StartsWith("Conversation_"))
+            {
+                if (int.TryParse(roomName.Replace("Conversation_", ""), out int conversationId))
+                {
+                    var isMember = await _context.ConversationMembers
+                        .AnyAsync(cm => cm.ConversationId == conversationId && cm.UserId == userId);
+                    
+                    if (!isMember) return;
+                }
+            }
+
             await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
         }
 
         public async Task NotifyTyping(string roomName, string userId, bool isTyping)
         {
+            var httpContext = Context.GetHttpContext();
+            var currentUserId = httpContext?.Session.GetString("UserId");
+            if (currentUserId != userId) return;
+
             await Clients.OthersInGroup(roomName).SendAsync("UserTyping", userId, isTyping);
         }
 
         public async Task MarkAsSeen(int conversationId, string userId)
         {
+            var httpContext = Context.GetHttpContext();
+            var currentUserId = httpContext?.Session.GetString("UserId");
+            if (currentUserId != userId) return;
+
             var unseenMessages = _context.Messages
                 .Where(m => m.ConversationId == conversationId && m.SenderId != userId && !m.IsSeen);
 
@@ -84,6 +109,17 @@ namespace SecureChat.Hubs
 
         public async Task SendMessageToRoom(string roomName, string senderId, string message, int conversationId)
         {
+            var httpContext = Context.GetHttpContext();
+            var userIdFromSession = httpContext?.Session.GetString("UserId");
+
+            if (string.IsNullOrEmpty(userIdFromSession) || userIdFromSession != senderId) return;
+
+            // Check membership
+            var isMember = await _context.ConversationMembers
+                .AnyAsync(cm => cm.ConversationId == conversationId && cm.UserId == senderId);
+
+            if (!isMember) return;
+
             // 1. Save message to Database
             var newMessage = new Message
             {
@@ -100,10 +136,6 @@ namespace SecureChat.Hubs
             await _context.SaveChangesAsync();
 
             // 2. Broadcast to Group
-            // We send the plain message to clients (they will display it)
-            // Or we could send the encrypted one and decrypt on client, 
-            // but currently the app decrypts on server before showing in Razor pages.
-            // To keep it simple for now, we send the plain message.
             await Clients.Group(roomName).SendAsync("ReceiveMessage", senderId, message, newMessage.SentAt.ToString("dd/MM/yyyy HH:mm"), newMessage.Id);
         }
     }

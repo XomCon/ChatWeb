@@ -207,6 +207,7 @@
         const conversationId = "@Model.ConversationId";
         const currentUserId = "@Model.CurrentUserId";
         const currentUserName = "@Model.CurrentUserName";
+        const roomName = "Conversation_" + conversationId;
         const chatMessages = document.getElementById("chatMessages");
         const chatForm = document.getElementById("chatForm");
         const messageInput = document.getElementById("messageInput");
@@ -216,15 +217,22 @@
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveGroupMessage", function (msg) {
-            appendMessage(msg);
+        connection.on("ReceiveMessage", function (senderId, message, sentAt, messageId) {
+            appendMessage({ senderId, senderName: (senderId === currentUserId ? currentUserName : "Thành viên"), content: message, sentAt });
             const placeholder = document.getElementById("noMessagesPlaceholder");
             if (placeholder) placeholder.remove();
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            if (document.hasFocus() && senderId !== currentUserId) {
+                connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
+            }
         });
 
         connection.start()
-            .then(() => connection.invoke("JoinConversation", conversationId.toString()))
+            .then(() => {
+                connection.invoke("JoinRoom", roomName);
+                connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
+            })
             .catch(err => console.error(err.toString()));
 
         chatForm.addEventListener("submit", (e) => {
@@ -236,7 +244,7 @@
             const text = messageInput.value.trim();
             if (!text) return;
             try {
-                await connection.invoke("SendGroupMessage", conversationId.toString(), currentUserId, currentUserName, text);
+                await connection.invoke("SendMessageToRoom", roomName, currentUserId, text, parseInt(conversationId));
                 messageInput.value = "";
             } catch (err) {
                 console.error(err.toString());
@@ -270,7 +278,9 @@
             return div.innerHTML;
         }
 
-        window.addEventListener("beforeunload", () => connection.invoke("LeaveConversation", conversationId.toString()));
+        window.addEventListener("focus", () => {
+             connection.invoke("MarkAsSeen", parseInt(conversationId), currentUserId);
+        });
         chatMessages.scrollTop = chatMessages.scrollHeight;
     </script>
 }

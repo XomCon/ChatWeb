@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SecureChat.Data;
@@ -195,18 +195,6 @@ namespace SecureChat.Pages.Friends
 
             _context.FriendRequests.Remove(request);
             await _context.SaveChangesAsync();
-
-            await _auditLogService.WriteLogAsync(
-                currentUserId,
-                "AcceptFriendRequest",
-                $"Chấp nhận lời mời kết bạn từ userId={request.SenderId}",
-                HttpContext);
-
-            await _auditLogService.WriteLogAsync(
-                currentUserId,
-                "AcceptFriendRequest",
-                $"Chấp nhận lời mời kết bạn từ userId={request.SenderId}",
-                HttpContext);
 
             await _auditLogService.WriteLogAsync(
                 currentUserId,
